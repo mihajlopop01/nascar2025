@@ -36,7 +36,7 @@
     const milliseconds = date.getUTCMilliseconds();
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}.${milliseconds}`;
   }
-
+  //funkcija za pomeranje progress bar-a
   function seek(event) {
     const seekTime = (event.target.value / 100) * video.duration; 
     video.currentTime = seekTime; 

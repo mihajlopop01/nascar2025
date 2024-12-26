@@ -27,7 +27,8 @@
   <div><h2>Project 2025</h2></div>
   <div>CORS sljaka: {helloMessage}</div>
   <VideoPlayer/>
-  <MetricView />
+ 
+  <!-- <MetricView /> -->
   
 </div>
 

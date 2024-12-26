@@ -63,26 +63,23 @@
 
             case 'Enter':
               event.preventDefault();
-              if (currentCellIndex < cellNames.length) {
-              const cell = document.querySelector(`td[name="${cellNames[currentCellIndex]}"]`);
-              if (cell) {
-              cell.textContent = timeDisplay;
-              currentCellIndex++;
-          }
-        }
+              const cellName = cellNames[currentCellIndex];
+              if (currentCellIndex >= 0 && currentCellIndex < cellNames.length) {
+                //Inicijalizujemo custom evente updateTimeDisplay koji ce komponenta MetricView da osluskuje
+                  const event = new CustomEvent('updateTimeDisplay', {
+                      detail: { timeDisplay }
+                  });
+                  dispatchEvent(event);
+              }
               break;
     }
   }
 
-  // onMount(() => {
-  //   video.addEventListener('timeupdate', () => {
-  //   });
-  // });
 </script>
 
 <svelte:window on:keydown={handleKeydown}/>
 <div class="video-container">
-  <input type="file" accept="video/*" on:change={handleFileUpload}>
+  <input type="file" accept="video/*" onchange={handleFileUpload}>
   
   <video 
   bind:this={video}
@@ -97,6 +94,7 @@
  koja azurira timeDisplay varijablu -->
 <Playback {video} on:timeUpdate={e => timeDisplay = e.detail}/> </div>
 
+<MetricView {currentCellIndex} />
 
 <style>
   .video-container {
