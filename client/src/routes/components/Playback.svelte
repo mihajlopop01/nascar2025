@@ -54,9 +54,9 @@
     }
   });
 </script>
-<h4>Playback Component</h4>
-
+<h4>Playback</h4>
 <div class="playback-container">
+
   <input type="range" min="0" max="100" value={progress} on:input={seek} class="progress-bar" />
   <div class="controls">
     <button on:click={handlePlay}>Play</button>
@@ -79,6 +79,8 @@
     display: flex;
     flex-direction: column; 
     gap: 1rem; 
+    border: solid 1px;
+    padding: 5px;
   }
 
   .controls {

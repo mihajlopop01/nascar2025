@@ -2,6 +2,7 @@
   import VideoPlayer from './components/VideoPlayer.svelte';
   import MetricView from './components/MetricView.svelte';
   import Playback from './components/Playback.svelte';
+	import { onMount } from 'svelte';
 
   let helloMessage = '';
 
@@ -17,9 +18,11 @@
       console.error('Error fetching hello message:', error);
     }
   }
-
+  onMount(() => {
+    testFetch();
+    });
   
-  testFetch();
+  
 
 </script>
 
