@@ -7,20 +7,22 @@
   let playbackSpeed = 1; 
   let progress = 0; 
   let timeDisplay = '0:00.000'; 
+  let isPlaying = false;
 
-  function handlePlay() {
-    video.play();
-  }
-
-  function handlePause() {
-    video.pause();
+  function togglePlayPause() {
+    if (isPlaying) {
+      video.pause();
+    } else {
+      video.play();
+    }
+    isPlaying = !isPlaying; 
   }
 
   function changeSpeed(event) {
     playbackSpeed = event.target.value;
     video.playbackRate = playbackSpeed; 
   }
-
+//funkcija za azuriranje timeDisplay-a
   function updateProgress() {
     if (video.duration) {
       progress = (video.currentTime / video.duration) * 100; 
@@ -36,6 +38,7 @@
     const milliseconds = date.getUTCMilliseconds();
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}.${milliseconds}`;
   }
+
   //funkcija za pomeranje progress bar-a
   function seek(event) {
     const seekTime = (event.target.value / 100) * video.duration; 
@@ -59,8 +62,9 @@
 
   <input type="range" min="0" max="100" value={progress} on:input={seek} class="progress-bar" />
   <div class="controls">
-    <button on:click={handlePlay}>Play</button>
-    <button on:click={handlePause}>Pause</button>
+    <button on:click={togglePlayPause}>
+      {isPlaying ? 'Pause' : 'Play'} 
+    </button>
     <div class="speed-control">
       <label for="speed">Speed:</label>
       <select id="speed" on:change={changeSpeed}>
