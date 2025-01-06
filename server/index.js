@@ -1,39 +1,43 @@
+require('dotenv').config();
 const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const userRoutes = require('./controllers/UserController');
+const authRoutes = require('./routes/auth');
+const workerRoutes = require('./routes/worker');
+const adminRoutes = require('./routes/admin');
+const auditorRoutes = require('./routes/auditor');
+ 
+
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-if (process.env.NODE_ENV !== "production") {
-    require("dotenv").config(); 
-}
-
-const db = process.env.MONGO_URI
-mongoose.connect(db, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+// Middleware
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(express.json());
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+//Konekcija na bazy
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 })
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-app.use(cors({
-    origin: 'http://localhost:5173' 
-}));
+// Rute
+app.use('/auth', authRoutes);
+app.use('/worker', workerRoutes);
+app.use('/admin', adminRoutes);
+app.use('/auditor', auditorRoutes);
+app.use('/api', authRoutes);
 
-app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-
-//API za testiranje CORS-a
-app.get('/hello', (req, res) => {
-    res.send('Hello World');
-});
-
-app.use('/api/users', userRoutes);
-
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
 });

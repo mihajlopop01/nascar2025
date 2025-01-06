@@ -1,45 +1,58 @@
 <script>
-  import VideoPlayer from './components/VideoPlayer.svelte';
-  import MetricView from './components/MetricView.svelte';
-  import Playback from './components/Playback.svelte';
-	import { onMount } from 'svelte';
+  import { onMount } from 'svelte';
+  
+// async function checkAuth() {
+// try {
+//   const response = await fetch('http://localhost:3000/api/user', {
+//     credentials: 'include'
+//   });
+//   if (response.ok) {
+//     return true;
+//   }
+// } catch (error) {
+//   console.error('Auth check failed:', error);
+// }
+// return false;
+// }
+  
+// onMount(async () => {
+//      if (await checkAuth()) {
+//       window.location.href = '/worker'; // Use navigate instead of goto
+//      }
+//  });
 
-  let helloMessage = '';
-
-  //Funkcije za testiranje konekcije na server
-  async function testFetch() {
-    try {
-      const response = await fetch('http://localhost:3000/hello'); 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      helloMessage = await response.text();
-    } catch (error) {
-      console.error('Error fetching hello message:', error);
-    }
+  function handleGoogleLogin() {
+    window.location.href = 'http://localhost:3000/auth/google';
   }
-  onMount(() => {
-    testFetch();
-    });
-  
-  
-
 </script>
 
-<div class="container">
-  <div><h2>Project 2025</h2></div>
-  <div>CORS sljaka: {helloMessage}</div>
-  <VideoPlayer/>
-
-  
+<div class="login-container">
+  <h1>Welcome to Asphalt Workbench</h1>
+  <button onclick={handleGoogleLogin}>
+    Login with Google
+  </button>
 </div>
 
 <style>
-  .container {
-      display: flex;
-      flex-direction: column; 
-      gap: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
+  .login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  button {
+    padding: 10px 20px;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  button:hover {
+    background-color: #357abd;
   }
 </style>
