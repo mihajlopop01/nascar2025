@@ -418,6 +418,7 @@
 		padding: 0;
 		box-sizing: border-box;
 		font: 'poppins', sans-serif;
+		font-weight: 500;
 	}
 
 	#body {
