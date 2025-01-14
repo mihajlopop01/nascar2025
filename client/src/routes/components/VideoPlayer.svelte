@@ -44,7 +44,7 @@
 			return;
 		}
 		videos = files.map((file) => URL.createObjectURL(file));
-		video.src = videos[0]; // Prvi video kao defaultni
+		video.src = videos[0];
 	}
 
 	function handleKeydown(event) {
