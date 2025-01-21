@@ -1,0 +1,761 @@
+:root {
+    --light: #f4f4f4;
+    --grey: #e0e0e0;
+    --dark: #333;
+
+    --nred: #e4002b;
+    --nyellow: #ffd659;
+    --nblue: #007ac2;
+
+    --main-background: #f7f7f7;
+    --main-background: #f5f6f8;
+    --main-light: #ffffff;
+    --main-dark: #e1e1e1;
+
+    --main-green: #00a652;
+    --main-green: #00118f;
+    --light-green: #b8e3ce;
+    --light-green: #a3adf9;
+    --proba: #dcefe8;
+
+    --main-font: 'Poppins', sans-serif;
+    --grey-font: #ababab;
+
+}
+
+*,
+*:before,
+*:after {
+    /* resets */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+korisne-funkcije {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    width: min(100%, 1200px);
+    height: max(100%, 1000px);
+}
+
+header,
+footer,
+nav,
+main,
+section {
+    container-type: inline-size;
+}
+
+@container (min-width: 40rem) {
+    h1 {
+        font-family: 'Poppins', sans-serif;
+    }
+}
+
+:global(html),
+:global(body) {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Poppins", sans-serif;
+}
+
+
+
+#page {
+    margin: 0;
+    padding: 0;
+    background: var(--main-background);
+    overflow-x: hidden;
+    height: 100%;
+
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    grid-template-rows: 8% 1fr;
+    grid-template-areas:
+        "nav header"
+        "nav main";
+
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    transition: all 0.3s;
+}
+
+
+.headings {
+    font-weight: 500;
+    font-style: normal;
+    font-size: 20px;
+    align-self: start;
+}
+
+main {
+    background-color: var(--main-background);
+    grid-area: main;
+    padding: 0px 20px 20px 0px;
+    gap: 20px;
+    min-width: 1015px;
+
+    display: grid;
+    grid-template-columns: 1fr max(30%, 400px);
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+        "centar right-up"
+        "centar right-down";
+
+    overflow-y: hidden;
+}
+
+.dash-section {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+}
+
+#main-section {
+    min-width: 500px;
+    grid-area: centar;
+    display: flex;
+    flex-direction: column;
+
+    overflow-y: hidden;
+
+
+}
+
+#main-header {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    padding-left: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    gap: 40px;
+
+    & button {
+        font-family: "Poppins", sans-serif;
+        color: white;
+        font-weight: 500;
+        background-color: var(--main-green);
+
+        &.inactive-button {
+            background-color: transparent;
+            color: black;
+        }
+
+        &#selection-button {
+            color: var(--grey-font);
+            font-weight: 500;
+        }
+
+        &:hover {
+            background-color: var(--main-dark);
+        }
+    }
+}
+
+.divider {
+    border: none;
+    border-top: 2px solid var(--main-background);
+    width: 100%;
+    margin: 20px 0 0 0;
+}
+
+#race-section {
+    text-align: center;
+
+    grid-area: right-up;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    & #race-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        background-color: #fff;
+    }
+
+    & #grafik {
+        width: 300px;
+        border-radius: 10px;
+    }
+}
+
+
+#notif-section {
+    text-align: center;
+
+    padding: 0;
+    margin: 0;
+    grid-area: right-down;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    /* overflow-y: scroll; */
+    overflow-x: hidden;
+}
+
+#notif-container {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.notif {
+    width: 300px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+form {
+    display: grid;
+    /* uses grid layout for the form for a cleaner layout */
+    gap: 10px;
+    /* space between grid items */
+    padding: 10px;
+}
+
+label {
+    display: block;
+    /* ensures the label takes up the full width */
+    margin: 5px 0;
+    /* adds spacing above and below each label */
+}
+
+input[type="checkbox"] {
+    margin-right: 10px;
+    /* adds space between the checkbox and the label text */
+}
+
+button {
+    background-color: #007BFF;
+    /* a modern blue for buttons */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    /* rounded corners for the buttons */
+    margin-top: 20px;
+    /* adds space before the button */
+    transition: background-color 0.3s ease;
+
+    /* transition for when the button is hovered or focused */
+    &:hover,
+    &:focus {
+        background-color: #0056b3;
+        /* darker blue when the button is interacted with */
+    }
+
+    &:disabled {
+        background-color: #6c757d;
+        /* a grey color for disabled state */
+        cursor: not-allowed;
+        /* changes the cursor to indicate the button is disabled */
+        opacity: 0.65;
+        /* slightly transparent to enhance the disabled look */
+    }
+}
+
+
+
+/* additional styles for specific elements */
+#notif_button {
+    background-color: #28a745;
+    /* a green color to indicate a positive action like enabling */
+}
+
+#saveButton {
+    background-color: var(--nblue);
+
+    /* a soft blue to signify a save action */
+    &:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
+}
+
+
+/* kartice za aute sa stopovima */
+
+
+
+.pitstop-card h2 {
+    font-size: 20px;
+    color: var(--grey-font);
+}
+
+.pitstop-info {
+    margin: 5px 0;
+    background-color: #0056b3;
+    color: white;
+    border-radius: 10px;
+}
+
+.pitstop-info span {
+    font-weight: bold;
+}
+
+.cars-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    /* Adjust the gap between checkboxes as needed */
+}
+
+.car-checkbox {
+    flex: 1 1 auto;
+}
+
+/* CSS for the modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.modal-content {
+    border-radius: 10px;
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    width: 80%;
+}
+
+.close {
+    margin: 0;
+    line-height: 0;
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+
+    &:hover,
+    &:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+}
+
+#notif-modal {
+    display: none;
+    overflow: hidden;
+    margin: 0;
+    height: 100vh;
+
+}
+
+#notif-modal-content {
+    border-radius: 20px;
+    background-color: white;
+    margin: 1em;
+    padding: 0.5em;
+    position: inherit;
+    top: 0;
+    right: 0;
+    height: calc(100% - 3em);
+    width: 400px;
+}
+
+
+
+
+
+/* ------------------------------------------ */
+/*  regulisi to */
+.modalM {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-contentM {
+    border-radius: 10px;
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+}
+
+.closeM {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+
+    &:hover,
+    &:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+}
+
+#saveButtonM {
+    background-color: #17a2b8;
+    width: 100px
+}
+
+/* --------------------------------------- */
+
+/* scrollbar */
+/* 
+::-webkit-scrollbar {
+    width: 10px;
+    background-color: transparent;
+}
+
+::-webkit-scrollbar:horizontal {
+    height: 10px;
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--nblue);
+    border-radius: 10px;
+    width: 10px;
+    visibility: hidden;
+}
+
+#pitstop-cards-container:hover::-webkit-scrollbar-thumb {
+    visibility: visible ;
+    
+} */
+
+/* promena jezika */
+#language img {
+    height: 30px;
+    width: 30px;
+}
+
+
+/* indicator-light */
+.blinking {
+    animation: 1s blink ease infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* tabela stopova */
+.pitstop-table {
+    width: 100%;
+    /* da li ovako */
+    border-collapse: separate;
+    border-spacing: 0 10px;
+
+    margin: 0;
+
+    & th {
+        background-color: white;
+        color: black;
+        font-weight: bold;
+        padding: 20px;
+    }
+
+    & td {
+
+        /* border-radius: 10px; */
+        padding: 0 20px 0 20px;
+        color: black;
+
+        & div {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        &.bolded {
+            font-weight: bold;
+        }
+
+        &.order {
+            color: var(--main-green);
+        }
+    }
+
+    & tr {
+        /* display: block; */
+        height: 50px;
+        margin-bottom: 20px;
+        background-color: var(--main-light);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        padding: 10px;
+
+        &:hover {
+            background-color: var(--main-dark);
+            /* cursor: pointer; */
+        }
+    }
+
+    & thead tr,
+    & thead th {
+        background-color: transparent !important;
+        padding-bottom: 0 !important;
+        margin-bottom: 10px !important;
+        padding-top: 0 !important;
+        box-shadow: none !important;
+    }
+
+    & button {
+        color: white;
+        background-color: var(--main-green);
+        width: 45%;
+    }
+
+    & .pit-button-container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.indicator {
+    /* text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+    background-color: none;
+}
+
+td:first-child:before {
+    content: '';
+    position: absolute;
+    background-color: var(--main-green);
+    width: 5px;
+    height: 100%;
+    left: -5px;
+    top: 0px;
+}
+
+.chosen {
+    position: relative;
+}
+
+
+
+
+#pit-container-wrapper {
+    /* ovo postoji zbog onog gapa */
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+
+#pitstop-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 50px;
+    padding: 40px 50px;
+    margin: 0 0 0 0;
+    height: auto;
+    /* box-sizing: border-box; */
+    overflow-y: hidden;
+
+    & .pitstop-card {
+        min-width: 46%;
+        width: 45%;
+        min-height: 200px;
+        background-color: var(--main-background);
+        border-radius: 8px;
+        padding: 0 20px 0 20px;
+        margin: 0;
+        /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+    }
+}
+
+
+.pit-card-new {
+    padding: 20px;
+    margin: 0;
+
+    background-color: var(--main-dark);
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    & .pit-card-new-info {
+        display: flex;
+        align-items: center;
+
+        & .car-num {
+            font-size: 32px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        & .car-prior {
+            padding-left: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--grey-font);
+        }
+
+        & .dots-menu {
+            margin-left: 20px;
+            cursor: pointer;
+            fill: var(--grey-font);
+            height: 26px;
+            width: 16px;
+        }
+    }
+
+}
+
+
+
+
+
+.grid-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+
+}
+
+/* Table headers */
+.grid-header {
+    font-weight: 500;
+    padding: 10px 0;
+    text-align: center;
+    grid-column: span 1;
+}
+
+/* Each row styled as a card */
+.grid-card {
+    grid-column: span 6;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 15px 0 15px 0;
+    background-color: var(--main-light);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: black;
+    border-radius: 10px;
+    transition: all 0.3s;
+    cursor: pointer;
+    /* position: relative; */
+    overflow: hidden;
+
+    &:hover {
+        background-color: var(--main-background);
+        transition: all 0.3s;
+    }
+}
+
+/* Hidden content that shows on expand */
+.hidden-content {
+    grid-column: span 6;
+    display: none;
+    padding-top: 5px;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s;
+
+    & button {
+        color: white;
+        background-color: var(--main-green);
+        width: calc((100% - 3*15px)/2);
+        margin: 0;
+    }
+
+    & .edit-button {
+        width: calc((100% - 2*15px));
+    }
+}
+
+/* Expanding the grid-card on click */
+.grid-card.expanded .hidden-content {
+    display: flex;
+    transition: all 0.3s;
+}
+
+.grid-card-content {
+    text-align: center;
+    width: 65px;
+}
+
+.grid-card :nth-child(1):not(button) {
+    color: var(--main-green);
+    font-weight: 600;
+}
+
+.grid-card :nth-child(2):not(button),
+.grid-card :nth-child(4) {
+    font-weight: bold;
+}
+
+
+
+/* nove */
+.hidden {
+    display: none;
+}
+
+.placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--main-dark);
+    /* box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), inset -2px -4px 4px rgba(255, 255, 255, 0.1); */
+    grid-column: span 6;
+    border-radius: 10px;
+    width: 435px;
+    height: 250px;
+
+    & p {
+        font-size: 20px;
+        font-weight: 400;
+        color: var(--grey-font);
+    }
+}
+
+.ass-unass {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--grey-font);
+    margin-left: auto;
+}
