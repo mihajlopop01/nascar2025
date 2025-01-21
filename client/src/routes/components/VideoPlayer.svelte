@@ -3,9 +3,19 @@
 	import MetricView from './MetricView.svelte';
 	import Playback from './Playback.svelte';
 
+	let selectedTemplate = $state('4 Tire'); // Default template
+
+    const templates = ['4 Tire', '2 RS', '2 LS','Fuel Only'];
+
+
 	let video = $state(null);
-	let currentCellIndex = 0;
+	let currentCellIndex = $state(0);
 	let timeDisplay = '0:00.000';
+	let timerDisplay = $state('0:00');
+
+	let stopwatchInterval;
+	let elapsedTime = $state(0);
+
 	const frameDuration = 0.03;
 	const cellNames = [
 		'carStop',
@@ -34,8 +44,9 @@
 		'lsPeg'
 	];
 	let videos = []; // Niz videa sa panela
-	let currentPanel = 'OH';
+	let currentPanel = $state('OH');
 	const panelNames = ['OH', 'E1', 'E2', 'E3'];
+
 
 	function handleFileUpload(event) {
 		const files = Array.from(event.target.files);
@@ -45,7 +56,22 @@
 		}
 		videos = files.map((file) => URL.createObjectURL(file));
 		video.src = videos[0];
+
+		startStopwatch();
 	}
+
+	function startStopwatch() {
+		if (stopwatchInterval) clearInterval(stopwatchInterval);
+		elapsedTime = 0;
+		timerDisplay = '0:00';
+		stopwatchInterval = setInterval(() => {
+			elapsedTime++;
+			const minutes = Math.floor(elapsedTime / 60);
+			const seconds = elapsedTime % 60;
+			timerDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+		}, 1000);
+	}
+
 
 	function handleKeydown(event) {
 		if (event.repeat) return;
@@ -108,6 +134,10 @@
 		video.currentTime += direction * frameDuration;
 		video.pause();
 	}
+
+	function changeTemplate(event) {
+	selectedTemplate = event.target.value;
+}
 
 	function switchPanel(panel) {
 		currentPanel = panel;
@@ -348,12 +378,19 @@
 				</div>
 				<div id="work_info">
 					<div id="work_timer">
-						<span id="work_timer_text"><span>🟢</span> 2:33m</span>
+						<span id="work_timer_text"><span>🟢</span>{timerDisplay}</span>
 						<span>Petar Jovanovic</span>
 					</div>
 					<div id="work_buttons_cont">
 						<button class="work_button" onclick={help_work}>Help</button>
 						<button class="work_button" onclick={submit_work}>Submit</button>
+						<div>Change Template</div>
+						<select onchange={changeTemplate}>
+							{#each templates as template}
+								<option value={template} selected={template === selectedTemplate}>{template}</option>
+							{/each}
+						</select>
+						
 					</div>
 				</div>
 			</div>
@@ -381,12 +418,20 @@
 						</div>
 					{/each} -->
 
-					<MetricView {currentCellIndex} />
+					<MetricView {currentCellIndex} {selectedTemplate}/>
 				</div>
 			</div>
 		</div>
+
 		<div id="right" class="section">
 			<div id="video_part" class="right_part">
+				<div class="panel_selector">
+					{#each panelNames as panel}
+						<button class:selected={currentPanel === panel} onclick={() => switchPanel(panel)}>
+							{panel}
+						</button>
+					{/each}
+				</div>
 				<div id="video_container">
 					<video bind:this={video} muted width="100%">
 						<track kind="captions" src="" label="English" />
@@ -579,6 +624,8 @@
 		margin: 10px 10px 0px 10px;
 		border-radius: 10px;
 		background-color: var(--background-color);
+		position: relative; 
+		z-index: 1;
 	}
 
 	#video_container {
@@ -645,5 +692,21 @@
 	::-webkit-scrollbar-thumb:hover {
 		background: #555;
 		transition: all 0.2s ease-in-out;
+	}
+
+    /* Toni */
+	.panel_selector {
+		position: absolute; 
+		top: 0;
+		left: 0;
+		width: 100%; 
+		z-index: 2; 
+		display: flex; 
+		justify-content: space-around; 
+	}
+
+	.panel_selector button {
+		flex: 1; 
+		margin: 2px 5px; 
 	}
 </style>
