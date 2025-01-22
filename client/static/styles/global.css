@@ -1,0 +1,163 @@
+:root {
+    --light: #f4f4f4;
+    --grey: #e0e0e0;
+    --dark: #333;
+
+    --nred: #e4002b;
+    --nyellow: #ffd659;
+    --nblue: #007ac2;
+
+    --main-background: #f7f7f7;
+    --main-background: #f5f6f8;
+    --main-light: #ffffff;
+    --main-dark: #e1e1e1;
+
+    --main-green: #00a652;
+    --main-green: #00118f;
+    --light-green: #b8e3ce;
+    --light-green: #a3adf9;
+    --proba: #dcefe8;
+
+    --main-font: 'Poppins', sans-serif;
+    --grey-font: #ababab;
+
+}
+
+/* dark theme */
+@media(prefers-color-scheme: dark) {
+    :root {
+        --layer0: #434343;
+        --layer1: #222222;
+        --layer2: #111111;
+
+        --accent0: blue;
+        --accent1: red;
+
+        --font-color: black;
+        --font-color-hover: white;
+    }
+}
+
+[data-theme="dark"] {
+    --layer0: #434343;
+    --layer1: #2d2d2d;
+    --layer2: #111111;
+    --accent0: blue;
+    --accent1: red;
+    --font-color: white;
+    --font-color-hover: black;
+
+    --main-background: grey;
+}
+
+:global {
+
+    *,
+    *:before,
+    *:after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Poppins", sans-serif;
+        color-scheme: dark light;
+    }
+
+    header,
+    footer,
+    nav,
+    main,
+    section {
+        container-type: inline-size;
+    }
+
+    @container (min-width: 40rem) {
+        h1 {
+            font-family: 'Poppins', sans-serif;
+        }
+    }
+}
+
+
+
+
+.headings {
+    font-weight: 500;
+    font-style: normal;
+    font-size: 20px;
+    align-self: start;
+}
+
+
+.dash-section {
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+}
+
+#main-section {
+    min-width: 500px;
+    grid-area: centar;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+}
+
+
+
+
+
+form {
+    display: grid;
+    gap: 10px;
+    padding: 10px;
+}
+
+label {
+    display: block;
+    margin: 5px 0;
+}
+
+input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+button {
+    background-color: #007BFF;
+    /* a modern blue for buttons */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    /* rounded corners for the buttons */
+    margin-top: 20px;
+    /* adds space before the button */
+    transition: background-color 0.3s ease;
+
+    /* transition for when the button is hovered or focused */
+    &:hover,
+    &:focus {
+        background-color: #0056b3;
+        /* darker blue when the button is interacted with */
+    }
+
+    &:disabled {
+        background-color: #6c757d;
+        /* a grey color for disabled state */
+        cursor: not-allowed;
+        /* changes the cursor to indicate the button is disabled */
+        opacity: 0.65;
+        /* slightly transparent to enhance the disabled look */
+    }
+}

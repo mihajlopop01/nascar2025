@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import VideoPlayer from '../../components/VideoPlayer.svelte';
+	import { appState } from '../../js/state.svelte.js';
 
 	let user = null;
 	let loading = true;
@@ -28,6 +29,7 @@
 
 	onMount(() => {
 		checkAuth();
+		appState.page = 'breakdown';
 	});
 
 	function handleLogout() {

@@ -1,10 +1,21 @@
 <script>
-	let { selectedNav = $bindable() } = $props();
+	import { onMount } from 'svelte';
+	import { appState } from '../js/state.svelte.js';
+
+	function toggleTheme() {
+		appState.theme = appState.theme === 'light' ? 'dark' : 'light';
+		document.cookie = `theme=${appState.theme}; path=/; max-age=31536000`;
+		document.documentElement.setAttribute('data-theme', appState.theme);
+	}
+
+	onMount(() => {
+		appState.theme = document.documentElement.getAttribute('data-theme');
+	});
 </script>
 
 <nav>
 	<div class="nav-container">
-		<a href="/" class="nav-font logo" onclick={() => (selectedNav = 'dashboard')}>
+		<a href="/" class="nav-font logo" onclick={() => (appState.page = 'dashboard')}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				height="40px"
@@ -24,9 +35,9 @@
 	<div class="nav-container">
 		<h3 class="nav-heading">Race</h3>
 		<a
-			class="nav-font {selectedNav === 'dashboard' ? 'active-nav' : ''}"
+			class="nav-font {appState.page === 'dashboard' ? 'active-nav' : ''}"
 			href="/dashboard"
-			onclick={() => (selectedNav = 'dashboard')}
+			onclick={() => (appState.page = 'dashboard')}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -43,9 +54,9 @@
 			Dashboard
 		</a>
 		<a
-			class="nav-font {selectedNav === 'breakdown' ? 'active-nav' : ''}"
+			class="nav-font {appState.page === 'breakdown' ? 'active-nav' : ''}"
 			href="/worker/breakdown"
-			onclick={() => (selectedNav = 'breakdown')}
+			onclick={() => (appState.page = 'breakdown')}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -62,9 +73,9 @@
 			Breakdown
 		</a>
 		<a
-			class="nav-font {selectedNav === 'support' ? 'active-nav' : ''}"
+			class="nav-font {appState.page === 'support' ? 'active-nav' : ''}"
 			href="#"
-			onclick={() => (selectedNav = 'support')}
+			onclick={() => (appState.page = 'support')}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -81,9 +92,9 @@
 			Support
 		</a>
 		<a
-			class="nav-font {selectedNav === 'calendar' ? 'active-nav' : ''}"
+			class="nav-font {appState.page === 'calendar' ? 'active-nav' : ''}"
 			href="#"
-			onclick={() => (selectedNav = 'calendar')}
+			onclick={() => (appState.page = 'calendar')}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -104,9 +115,9 @@
 	<div class="nav-container">
 		<h3 class="nav-heading">Admin</h3>
 		<a
-			class="nav-font {selectedNav === 'admin' ? 'active-nav' : ''}"
+			class="nav-font {appState.page === 'admin' ? 'active-nav' : ''}"
 			href="#"
-			onclick={() => (selectedNav = 'admin')}
+			onclick={() => (appState.page = 'admin')}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -123,9 +134,9 @@
 			Admin panel
 		</a>
 		<a
-			class="nav-font {selectedNav === 'support_admin' ? 'active-nav' : ''}"
+			class="nav-font {appState.page === 'support_admin' ? 'active-nav' : ''}"
 			href="#"
-			onclick={() => (selectedNav = 'support_admin')}
+			onclick={() => (appState.page = 'support_admin')}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -142,9 +153,9 @@
 			Support (A)
 		</a>
 		<a
-			class="nav-font {selectedNav === 'monitor' ? 'active-nav' : ''}"
+			class="nav-font {appState.page === 'monitor' ? 'active-nav' : ''}"
 			href="#"
-			onclick={() => (selectedNav = 'monitor')}
+			onclick={() => (appState.page = 'monitor')}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -161,9 +172,9 @@
 			Monitor
 		</a>
 		<a
-			class="nav-font {selectedNav === 'time' ? 'active-nav' : ''}"
+			class="nav-font {appState.page === 'time' ? 'active-nav' : ''}"
 			href="#"
-			onclick={() => (selectedNav = 'time')}
+			onclick={() => (appState.page = 'time')}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -181,10 +192,10 @@
 		</a>
 	</div>
 
-	<div class="nav-container hidden">
+	<div class="nav-container">
 		<h3 class="nav-heading">Settings</h3>
 		<a
-			class="nav-font {selectedNav === 'settings' ? 'active-nav' : ''}"
+			class="nav-font {appState.page === 'settings' ? 'active-nav' : ''}"
 			href="#"
 			onclick={toggleActiveNav('settings')}
 		>
@@ -217,35 +228,36 @@
 			</svg>
 			Language
 		</a>
-		<a href="#" id="dmode" class="nav-font hidden">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				height="24px"
-				viewBox="0 -960 960 960"
-				width="24px"
-				fill="black"
-				class="nav-icon"
-			>
-				<path
-					d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"
-				/>
-			</svg>
-			Dark mode
-		</a>
-		<a href="#" id="lmode" class="nav-font">
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				height="24px"
-				viewBox="0 -960 960 960"
-				width="24px"
-				fill="black"
-				class="nav-icon"
-			>
-				<path
-					d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"
-				/>
-			</svg>
-			Light mode
+		<a href="#" onclick={toggleTheme} id="dmode" class="nav-font hidden">
+			{#if appState.theme === 'light'}
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					height="24px"
+					viewBox="0 -960 960 960"
+					width="24px"
+					fill="black"
+					class="nav-icon"
+				>
+					<path
+						d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"
+					/>
+				</svg>
+				<span>Dark Mode</span>
+			{:else}
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					height="24px"
+					viewBox="0 -960 960 960"
+					width="24px"
+					fill="black"
+					class="nav-icon"
+				>
+					<path
+						d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"
+					/>
+				</svg>
+				<span>Light Mode</span>
+			{/if}
 		</a>
 	</div>
 
@@ -281,6 +293,7 @@
 <style>
 	nav {
 		grid-area: nav;
+		height: 100%;
 	}
 
 	.nav-font {

@@ -79,5 +79,152 @@
 	</div>
 </div>
 
-<style src="../dashboard.css">
+<style>
+	.pit-card-new {
+		padding: 20px;
+		font-family: var(--main-font);
+		margin: 0;
+
+		background-color: var(--main-dark);
+		border-radius: 20px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+		& .pit-card-new-info {
+			display: flex;
+			align-items: center;
+
+			& .car-num {
+				font-size: 32px;
+				font-weight: bold;
+				line-height: 1;
+			}
+
+			& .car-prior {
+				padding-left: 10px;
+				font-size: 20px;
+				font-weight: bold;
+				color: var(--grey-font);
+			}
+
+			& .dots-menu {
+				margin-left: 20px;
+				cursor: pointer;
+				fill: var(--grey-font);
+				height: 26px;
+				width: 16px;
+			}
+		}
+	}
+
+	.grid-table {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+		gap: 10px;
+		width: 100%;
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	/* Table headers */
+	.grid-header {
+		font-weight: 500;
+		padding: 10px 0;
+		text-align: center;
+		grid-column: span 1;
+	}
+
+	/* Each row styled as a card */
+	.grid-card {
+		grid-column: span 6;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+		gap: 10px;
+		padding: 15px 0 15px 0;
+		background-color: var(--main-light);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		color: black;
+		border-radius: 10px;
+		transition: all 0.3s;
+		cursor: pointer;
+		/* position: relative; */
+		overflow: hidden;
+
+		&:hover {
+			background-color: var(--main-background);
+			transition: all 0.3s;
+		}
+	}
+
+	/* Hidden content that shows on expand */
+	.hidden-content {
+		grid-column: span 6;
+		display: none;
+		padding-top: 5px;
+		justify-content: center;
+		align-items: center;
+		gap: 15px;
+		transition: all 0.3s;
+
+		& button {
+			color: white;
+			background-color: var(--main-green);
+			width: calc((100% - 3 * 15px) / 2);
+			margin: 0;
+		}
+
+		& .edit-button {
+			width: calc((100% - 2 * 15px));
+		}
+	}
+
+	/* Expanding the grid-card on click */
+	.grid-card.expanded .hidden-content {
+		display: flex;
+		transition: all 0.3s;
+	}
+
+	.grid-card-content {
+		text-align: center;
+		width: 65px;
+	}
+
+	.grid-card :nth-child(1):not(button) {
+		color: var(--main-green);
+		font-weight: 600;
+	}
+
+	.grid-card :nth-child(2):not(button),
+	.grid-card :nth-child(4) {
+		font-weight: bold;
+	}
+
+	/* nove */
+	.hidden {
+		display: none;
+	}
+
+	.placeholder {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: var(--main-dark);
+		/* box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), inset -2px -4px 4px rgba(255, 255, 255, 0.1); */
+		grid-column: span 6;
+		border-radius: 10px;
+		width: 435px;
+		height: 250px;
+
+		& p {
+			font-size: 20px;
+			font-weight: 400;
+			color: var(--grey-font);
+		}
+	}
+
+	.ass-unass {
+		font-size: 20px;
+		font-weight: 500;
+		color: var(--grey-font);
+		margin-left: auto;
+	}
 </style>

@@ -5,8 +5,7 @@
 
 	let selectedTemplate = $state('4 Tire'); // Default template
 
-    const templates = ['4 Tire', '2 RS', '2 LS','Fuel Only'];
-
+	const templates = ['4 Tire', '2 RS', '2 LS', 'Fuel Only'];
 
 	let video = $state(null);
 	let currentCellIndex = $state(0);
@@ -47,7 +46,6 @@
 	let currentPanel = $state('OH');
 	const panelNames = ['OH', 'E1', 'E2', 'E3'];
 
-
 	function handleFileUpload(event) {
 		const files = Array.from(event.target.files);
 		if (files.length > 4) {
@@ -71,7 +69,6 @@
 			timerDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 		}, 1000);
 	}
-
 
 	function handleKeydown(event) {
 		if (event.repeat) return;
@@ -136,8 +133,8 @@
 	}
 
 	function changeTemplate(event) {
-	selectedTemplate = event.target.value;
-}
+		selectedTemplate = event.target.value;
+	}
 
 	function switchPanel(panel) {
 		currentPanel = panel;
@@ -311,96 +308,80 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<!-- <div class="panel-selector">
-	{#each panelNames as panel}
-		<button class:selected={currentPanel === panel} onclick={() => switchPanel(panel)}>
-			{panel}
-		</button>
-	{/each}
-</div> -->
-<div class="video-container">
-	<!-- <input type="file" accept="video/*" multiple onchange={handleFileUpload} /> -->
-
-	<!-- <video bind:this={video} muted>
-		<track kind="captions" src="" label="English" />
-	</video> -->
-
-	<!-- <Playback {video} on:timeUpdate={(e) => (timeDisplay = e.detail)} /> -->
-	<!-- <MetricView {currentCellIndex} /> -->
-</div>
-
-<!-- Pera -->
-<div>
-	<div id="body">
-		<div id="left" class="section">
-			<div id="left_controls" class="left_part">
-				<button class="controls_button" onclick={open_pitstops}>Pit Stop Database</button>
-				<input type="file" accept="video/*" multiple onchange={handleFileUpload} />
+<main>
+	<div id="left" class="dash-section">
+		<div id="left_controls" class="left_part card">
+			<button class="controls_button" onclick={open_pitstops}>Pit Stop Database</button>
+			<input type="file" accept="video/*" multiple onchange={handleFileUpload} />
+		</div>
+		<div id="left_pitstop" class="left_part card">
+			<div class="left_part_header">
+				<h3 class="left_part_title">Pit Stop</h3>
+				<button id="button_edit_stop" class="left_part_header_button" onclick={stop_settings}
+					>?</button
+				>
 			</div>
-			<div id="left_pitstop" class="left_part">
-				<div class="left_part_header">
-					<h3 class="left_part_title">Pit Stop</h3>
-					<button id="button_edit_stop" class="left_part_header_button" onclick={stop_settings}
-						>?</button
-					>
-				</div>
-				<div id="stop_info">
+			<div id="stop_info">
+				<div id="stop_info_header">
 					<div class="stop_info_text">
 						<span class="stop_info_text_label">Car:</span>
 						<span class="stop_info_text_content">42</span>
 					</div>
 					<div class="stop_info_text">
+						<span class="stop_info_text_label">Prior:</span>
+						<span class="stop_info_text_content">[1.1]</span>
+					</div>
+					<div class="stop_info_text">
 						<span class="stop_info_text_label">Stop:</span>
-						<span class="stop_info_text_content">3</span>
+						<span class="stop_info_text_content">3.</span>
 					</div>
-					<div class="stop_info_text">
-						<span class="stop_info_text_label">Lap:</span>
-						<span class="stop_info_text_content">12</span>
-					</div>
-					<div class="stop_info_text">
-						<span class="stop_info_text_label">Time:</span>
-						<span class="stop_info_text_content">23:45</span>
-					</div>
-					<div class="stop_info_text">
-						<span class="stop_info_text_label">Dur:</span>
-						<span class="stop_info_text_content">12.33</span>
-					</div>
-					<div class="stop_info_text">
-						<span class="stop_info_text_title">Type:</span>
-						<span class="stop_info_text_content">4 Wheel</span>
-					</div>
+				</div>
+				<div id="stop_info_content">
+					<span class="stop_info_text_label">Lap:</span>
+					<span class="stop_info_text_label">Dur:</span>
+					<span class="stop_info_text_title">Type:</span>
+					<span class="stop_info_text_content">12</span>
+					<span class="stop_info_text_content">12.33</span>
+					<span class="stop_info_text_content">4W</span>
 				</div>
 			</div>
-			<div id="left_work_info" class="left_part">
-				<div class="left_part_header">
-					<h3 class="left_part_title">Work Tracker</h3>
-					<button class="left_part_header_button" onclick={work_settings}>?</button>
+		</div>
+		<div id="left_work_info" class="left_part card">
+			<div class="left_part_header">
+				<h3 class="left_part_title">Work Tracker</h3>
+				<button class="left_part_header_button" onclick={work_settings}>?</button>
+			</div>
+			<div id="work_info">
+				<div id="pitstop-timeline">
+					<div class="pitstop-timeline-text">start</div>
+					<div class="pitstop-timeline-moment">23:45</div>
+					<div class="pitstop-timeline-moment">23:45</div>
+					<div class="pitstop-timeline-moment">23:55</div>
+					<div class="pitstop-timeline-text">goal</div>
 				</div>
-				<div id="work_info">
-					<div id="work_timer">
-						<span id="work_timer_text"><span>🟢</span>{timerDisplay}</span>
-						<span>Petar Jovanovic</span>
-					</div>
-					<div id="work_buttons_cont">
-						<button class="work_button" onclick={help_work}>Help</button>
-						<button class="work_button" onclick={submit_work}>Submit</button>
-						<div>Change Template</div>
-						<select onchange={changeTemplate}>
-							{#each templates as template}
-								<option value={template} selected={template === selectedTemplate}>{template}</option>
-							{/each}
-						</select>
-						
-					</div>
+				<div id="work_timer">
+					<span id="work_timer_text"><span>🟢</span>{timerDisplay}</span>
+					<span>Petar Jovanovic</span>
+				</div>
+				<div id="work_buttons_cont">
+					<button class="work_button" onclick={help_work}>Help</button>
+					<button class="work_button" onclick={submit_work}>Submit</button>
 				</div>
 			</div>
-			<div id="left_metrics" class="left_part">
-				<div class="left_part_header">
-					<h3 class="left_part_title">Metrics</h3>
-					<button class="left_part_header_button" onclick={metrics_settings}>?</button>
-				</div>
-				<div id="metrics_cont">
-					<!-- {#each metrics as { tag, metrics: metricObj }, index}
+		</div>
+		<div id="left_metrics" class="left_part card">
+			<div class="left_part_header">
+				<h3 class="left_part_title">Metrics</h3>
+				<label for="stop-type">Type:</label>
+				<select id="stop-type" onchange={changeTemplate}>
+					{#each templates as template}
+						<option value={template} selected={template === selectedTemplate}>{template}</option>
+					{/each}
+				</select>
+				<button class="left_part_header_button" onclick={metrics_settings}>?</button>
+			</div>
+			<div id="metrics_cont">
+				<!-- {#each metrics as { tag, metrics: metricObj }, index}
 						<div class="tag-container">
 							<div class="tag-title">{tag}</div>
 							<div class="group_metrics_container">
@@ -418,37 +399,33 @@
 						</div>
 					{/each} -->
 
-					<MetricView {currentCellIndex} {selectedTemplate}/>
-				</div>
-			</div>
-		</div>
-
-		<div id="right" class="section">
-			<div id="video_part" class="right_part">
-				
-				<div id="video_container">
-					<video bind:this={video} muted width="100%">
-						<track kind="captions" src="" label="English" />
-					</video>
-				</div>
-				<div class="panel_selector">
-					{#each panelNames as panel}
-						<button class:selected={currentPanel === panel} onclick={() => switchPanel(panel)}>
-							{panel}
-						</button>
-					{/each}
-				</div>
-			</div>
-			<div id="video_controls" class="right_part">
-				<Playback {video} on:timeUpdate={(e) => (timeDisplay = e.detail)} />
+				<MetricView {currentCellIndex} {selectedTemplate} />
 			</div>
 		</div>
 	</div>
-</div>
+
+	<div id="right" class="dash-section">
+		<div id="video_part" class="right_part card">
+			<div id="video_container">
+				<video bind:this={video} muted width="100%">
+					<track kind="captions" src="" label="English" />
+				</video>
+			</div>
+			<div class="panel_selector">
+				{#each panelNames as panel}
+					<button class:selected={currentPanel === panel} onclick={() => switchPanel(panel)}>
+						{panel}
+					</button>
+				{/each}
+			</div>
+		</div>
+		<div id="video_controls" class="right_part card">
+			<Playback {video} on:timeUpdate={(e) => (timeDisplay = e.detail)} />
+		</div>
+	</div>
+</main>
 
 <style>
-	@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
 	:root {
 		--main-font: 'Poppins', sans-serif;
 		--main-color: black;
@@ -457,44 +434,34 @@
 		--accent-color: rgb(121, 121, 121);
 	}
 
-	:global(*),
-	:global(*:before),
-	:global(*:after) {
-		margin: 0;
-		padding: 0;
-		box-sizing: border-box;
-		font: 'poppins', sans-serif;
-		font-weight: 500;
-	}
-
-	#body {
+	main {
 		padding: 5px;
 		height: 100vh;
 		display: grid;
 		grid-template-columns: 350px 1fr;
 		gap: 5px;
-		background-color: var(--background-color-alt);
+		background-color: var(--main-background);
 		color: var(--main-color);
 		font-family: var(--main-font);
+		font-weight: 500;
 	}
 
 	.section {
-		background-color: var(--accent-color);
+		background-color: var(--main-light);
 		color: var(--main-color);
 		border-radius: 20px;
 	}
 	#left {
 		grid-column: 1;
 		display: grid;
-		/* grid-template-rows: 1fr 3fr 3fr 15fr; */
+		grid-template-rows: 1fr 3fr 3fr 15fr;
 		gap: 10px;
 		height: calc(100vh - 10px);
 	}
 	#right {
 		grid-column: 2;
 		display: grid;
-		grid-template-rows: 1fr 70px;
-		gap: 10px;
+		grid-template-rows: 1fr 100px;
 	}
 	h3 {
 		font-size: 1rem;
@@ -536,11 +503,15 @@
 		content: 'Edit';
 	}
 
-	.left_part {
+	.card {
+		background-color: var(--main-dark);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		border-radius: 10px;
 		padding: 10px;
 		margin: 10px;
-		border-radius: 10px;
-		background-color: var(--background-color);
+	}
+
+	.left_part {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
@@ -593,10 +564,22 @@
 	}
 
 	#stop_info {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr 1fr;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	#stop_info_header {
 		gap: 10px;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+	}
+	#stop_info_content {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: 1fr 1fr;
 	}
 
 	.tag-container {
@@ -622,10 +605,7 @@
 	}
 
 	#video_part {
-		margin: 10px 10px 0px 10px;
-		border-radius: 10px;
-		background-color: var(--background-color);
-		position: relative; 
+		position: relative;
 		z-index: 1;
 	}
 
@@ -638,9 +618,6 @@
 	}
 
 	#video_controls {
-		margin: 0 10px 10px 10px;
-		border-radius: 10px;
-		background-color: var(--background-color);
 	}
 
 	#work_info {
@@ -695,19 +672,19 @@
 		transition: all 0.2s ease-in-out;
 	}
 
-    /* Toni */
+	/* Toni */
 	.panel_selector {
-		position: absolute; 
+		position: absolute;
 		bottom: 5px;
 		left: 0;
-		width: 100%; 
-		z-index: 2; 
-		display: flex; 
-		justify-content: space-around; 
+		width: 100%;
+		z-index: 2;
+		display: flex;
+		justify-content: space-around;
 	}
 
 	.panel_selector button {
-		flex: 1; 
-		margin: 2px 5px; 
+		flex: 1;
+		margin: 2px 5px;
 	}
 </style>
