@@ -107,6 +107,7 @@ main {
         "centar right-down";
 
     overflow-y: hidden;
+    overflow-x: hidden;
 }
 
 .dash-section {

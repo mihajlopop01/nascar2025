@@ -1,7 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
 
-
 	// const metrics = [
 	// 	'Car Stop',
 	// 	'RS Up',
@@ -196,13 +195,41 @@
 	// export let selectedTemplate = '4 Tire';
 	let { currentCellIndex, selectedTemplate } = $props();
 
-  // Cuvamo vrednosti metrika kako bismo mogli da sacuvamo metrike kada se promeni template
-     let metricValues = $state({});
+	// Cuvamo vrednosti metrika kako bismo mogli da sacuvamo metrike kada se promeni template
+	let metricValues = $state({});
 
 	const templateMetrics = {
 		'4 Tire': metrics,
-		'2 RS': ['Car Stop','RS Up','RS Drop','RF Nut off Start','RF Clear','RF Mount','RF Nut on finish','RR Nut off Start','RR Clear','RR Mount','RR Nut on finish','RS Peg','Dropoff',],
-		'2 LS': ['Car Stop','LS Up','LS Drop','LF Nut off Start','LF Clear','LF Mount','LF Nut on finish','LR Nut off Start','LR Clear','LR Mount','LR Nut on finish','Dropoff','LS Peg'],
+		'2 RS': [
+			'Car Stop',
+			'RS Up',
+			'RS Drop',
+			'RF Nut off Start',
+			'RF Clear',
+			'RF Mount',
+			'RF Nut on finish',
+			'RR Nut off Start',
+			'RR Clear',
+			'RR Mount',
+			'RR Nut on finish',
+			'RS Peg',
+			'Dropoff'
+		],
+		'2 LS': [
+			'Car Stop',
+			'LS Up',
+			'LS Drop',
+			'LF Nut off Start',
+			'LF Clear',
+			'LF Mount',
+			'LF Nut on finish',
+			'LR Nut off Start',
+			'LR Clear',
+			'LR Mount',
+			'LR Nut on finish',
+			'Dropoff',
+			'LS Peg'
+		],
 		'Fuel Only': ['Car Stop']
 	};
 
@@ -211,21 +238,21 @@
 	// $: {
 	// 	metricsToDisplay.forEach(metric => {
 	// 		if (!(metric in metricValues)) {
-	// 			metricValues[metric] = ''; 
+	// 			metricValues[metric] = '';
 	// 		}
 	// 	});
 	// }
 
-    //Metrike koje se prikazuju se menjaju kada god se promeni template
+	//Metrike koje se prikazuju se menjaju kada god se promeni template
 	let metricsToDisplay = $derived(templateMetrics[selectedTemplate]);
 
-	// Kada se metricToDisplay promeni (odnosno kad se promeni template) proveravamo da li vec postoji vrednost za svaku metriku. Btw Charli cuckuje Hamiltona sledece sezone
+	// Kada se metricToDisplay promeni (odnosno kad se promeni template) proveravamo da li vec postoji vrednost za svaku metriku.
 	$effect(() => {
-  		metricsToDisplay.forEach(metric => {
-		if (!(metric in metricValues)) {
-	  	metricValues[metric] = '';
-		}
-  	});
+		metricsToDisplay.forEach((metric) => {
+			if (!(metric in metricValues)) {
+				metricValues[metric] = '';
+			}
+		});
 	});
 
 	function updateTimeDisplay(event) {
@@ -268,8 +295,9 @@
 						name={metric.toLowerCase().replace(/\s+(.)/g, (_, c) => c.toUpperCase())}
 						class={index === currentCellIndex ? 'highlight' : ''}
 						onclick={() => handleCellClick(index)}
-						oncontextmenu={(event) => handleCellRightClick(event, index)}
-					>{metricValues[metric]}</td>   <!--Upisuje vrednost metrike u polje, ako vrednost postoji-->
+						oncontextmenu={(event) => handleCellRightClick(event, index)}>{metricValues[metric]}</td
+					>
+					<!--Upisuje vrednost metrike u polje, ako vrednost postoji-->
 				</tr>
 			{/each}
 		</tbody>

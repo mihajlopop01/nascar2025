@@ -425,17 +425,18 @@
 
 		<div id="right" class="section">
 			<div id="video_part" class="right_part">
+				
+				<div id="video_container">
+					<video bind:this={video} muted width="100%">
+						<track kind="captions" src="" label="English" />
+					</video>
+				</div>
 				<div class="panel_selector">
 					{#each panelNames as panel}
 						<button class:selected={currentPanel === panel} onclick={() => switchPanel(panel)}>
 							{panel}
 						</button>
 					{/each}
-				</div>
-				<div id="video_container">
-					<video bind:this={video} muted width="100%">
-						<track kind="captions" src="" label="English" />
-					</video>
 				</div>
 			</div>
 			<div id="video_controls" class="right_part">
@@ -697,7 +698,7 @@
     /* Toni */
 	.panel_selector {
 		position: absolute; 
-		top: 0;
+		bottom: 5px;
 		left: 0;
 		width: 100%; 
 		z-index: 2; 
