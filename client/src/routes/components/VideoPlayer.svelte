@@ -596,9 +596,17 @@
 			/* padding-top: 0; */
 		}
 		& :hover {
-			background-color: #ebebeb;
-			cursor: pointer;
-			/* border-radius: 10px; */
+			> * {
+				color: green;
+				transition: all 0.2s ease-in-out;
+			}
+			.value {
+				color: green;
+				background-color: rgb(199, 233, 199);
+			}
+			.value-empty {
+				color: rgb(159, 210, 159);
+			}
 		}
 	}
 	.metric_row {
@@ -637,6 +645,8 @@
 			border-radius: 5px;
 			padding-block: 2px;
 			padding-inline: 5px;
+
+			transition: all 0.2s ease-in-out;
 		}
 		& .value-empty {
 			color: #c2c2c2;
