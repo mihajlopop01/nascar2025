@@ -291,7 +291,7 @@
 		padding: 7px;
 		/* padding-left: 30px; */
 		text-decoration: none;
-		transition: all 0.3s;
+		transition: all 0.3s ease-in-out;
 
 		&.active-nav {
 			background-color: var(--light-green);

@@ -3,6 +3,9 @@
 	import MetricView from './MetricView.svelte';
 	import Playback from './Playback.svelte';
 
+	let selectedMetric = $state('Car Stop');
+	// let selectedTag = $state('Entry');
+
 	let selectedTemplate = $state('4 Tire'); // Default template
 
 	const templates = ['4 Tire', '2 RS', '2 LS', 'Fuel Only'];
@@ -156,39 +159,39 @@
 			}
 		},
 		{
-			tag: 'RF',
+			tag: 'RF1',
 			metrics: {
-				'Nut Off Start': 12.33,
-				Clear: null,
-				Mount: null,
-				'Not On Finish': null
+				'RF Nut Off Start': 12.33,
+				'RF Clear': null,
+				'RF Mount': null,
+				'RF Nut On Finish': null
 			}
 		},
 		{
-			tag: 'LF',
+			tag: 'LF1',
 			metrics: {
-				'Nut Off Start': null,
-				Clear: null,
-				Mount: null,
-				'Not On Finish': null
+				'LF Nut Off Start': null,
+				'LF Clear': null,
+				'LF Mount': null,
+				'LF Nut On Finish': null
 			}
 		},
 		{
-			tag: 'RR',
+			tag: 'RR1',
 			metrics: {
-				'Nut Off Start': null,
-				Clear: null,
-				Mount: null,
-				'Not On Finish': null
+				'RR Nut Off Start': null,
+				'RR Clear': null,
+				'RR Mount': null,
+				'RR Nut On Finish': null
 			}
 		},
 		{
-			tag: 'LR',
+			tag: 'LR1',
 			metrics: {
-				'Nut Off Start': null,
-				Clear: null,
-				Mount: null,
-				'Not On Finish': null
+				'LR Nut Off Start': null,
+				'LR Clear': null,
+				'LR Mount': null,
+				'LR Nut On Finish': null
 			}
 		},
 		{
@@ -208,54 +211,54 @@
 				'Can2 In': null,
 				'Can2 Out': null,
 				'Fuel Added': null,
-				'Can1 Valid': null
+				'Can1 Valid Fuel Flow': null
 			}
 		},
 		{
 			tag: 'Other',
 			metrics: {
-				Category: null
+				'Other Category': null
 			}
 		},
 		{
-			tag: 'RF',
+			tag: 'RF2',
 			metrics: {
-				'Nut On Finish': null,
-				Pull: null,
-				'Nut On Start': null
+				'RF Nut On Finish': null,
+				'RF Pull': null,
+				'RF Nut On Start': null
 			}
 		},
 		{
-			tag: 'LF',
+			tag: 'LF2',
 			metrics: {
-				'Nut On Finish': null,
-				Pull: null,
-				'Nut On Start': null
+				'LF Nut On Finish': null,
+				'LF Pull': null,
+				'LF Nut On Start': null
 			}
 		},
 		{
-			tag: 'RR',
+			tag: 'RR2',
 			metrics: {
-				'Nut On Finish': null,
-				Pull: null,
-				'Nut On Start': null
+				'RR Nut On Finish': null,
+				'RR Pull': null,
+				'RR Nut On Start': null
 			}
 		},
 		{
-			tag: 'LR',
+			tag: 'LR2',
 			metrics: {
-				'Nut On Finish': null,
-				Pull: null,
-				'Nut On Start': null
+				'LR Nut On Finish': null,
+				'LR Pull': null,
+				'LR Nut On Start': null
 			}
 		},
 		{
 			tag: 'Wrench',
 			metrics: {
-				'RS Set': null,
-				'RS Complete': null,
-				'LS Set': null,
-				'LS Complete': null
+				'RS Wrench Set': null,
+				'RS Wrench Complete': null,
+				'LS Wrench Set': null,
+				'LS Wrench Complete': null
 			}
 		},
 		{
@@ -274,6 +277,93 @@
 			}
 		}
 	]);
+	const keyMap = {
+		RF1: 'RF',
+		RF2: 'RF',
+		LF1: 'LF',
+		LF2: 'LF',
+		RR1: 'RR',
+		RR2: 'RR',
+		LR1: 'LR',
+		LR2: 'LR',
+		Entry: 'Entry',
+		General: 'General',
+		Fuel: 'Fuel',
+		Other: 'Other',
+		Wrench: 'Wrench',
+		Position: 'Position',
+		Exit: 'Exit',
+
+		'Car Stop': 'Car Stop',
+		'RS Up': 'RS Up',
+		'RS Drop': 'RS Drop',
+		'LS Up': 'LS Up',
+		'LS Drop': 'LS Drop',
+		'Car Goes': 'Car Goes',
+
+		'RF Nut Off Start': 'Nut Off Start',
+		'RF Clear': 'Clear',
+		'RF Mount': 'Mount',
+		'RF Nut On Finish': 'Nut On Finish',
+
+		'LF Nut Off Start': 'Nut Off Start',
+		'LF Clear': 'Clear',
+		'LF Mount': 'Mount',
+		'LF Nut On Finish': 'Nut On Finish',
+
+		'RR Nut Off Start': 'Nut Off Start',
+		'RR Clear': 'Clear',
+		'RR Mount': 'Mount',
+		'RR Nut On Finish': 'Nut On Finish',
+
+		'LR Nut Off Start': 'Nut Off Start',
+		'LR Clear': 'Clear',
+		'LR Mount': 'Mount',
+		'LR Nut On Finish': 'Nut On Finish',
+
+		'Car Entry': 'Car Entry',
+		'RS Peg': 'RS Peg',
+		Dropoff: 'Dropoff',
+		'LS Peg': 'LS Peg',
+
+		'Can1 In': 'Can1 In',
+		'Can1 Out': 'Can1 Out',
+		'Can2 In': 'Can2 In',
+		'Can2 Out': 'Can2 Out',
+		'Fuel Added': 'Fuel Added',
+		'Can1 Valid Fuel Flow': 'Can1 Valid',
+
+		'Other Category': 'Category',
+
+		'RF Nut On Finish': 'Nut On Finish',
+		'RF Pull': 'Pull',
+		'RF Nut On Start': 'Nut On Start',
+
+		'LF Nut On Finish': 'Nut On Finish',
+		'LF Pull': 'Pull',
+		'LF Nut On Start': 'Nut On Start',
+
+		'RR Nut On Finish': 'Nut On Finish',
+		'RR Pull': 'Pull',
+		'RR Nut On Start': 'Nut On Start',
+
+		'LR Nut On Finish': 'Nut On Finish',
+		'LR Pull': 'Pull',
+		'LR Nut On Start': 'Nut On Start',
+
+		'RS Wrench Set': 'RS Set',
+		'RS Wrench Complete': 'RS Complete',
+		'LS Wrench Set': 'LS Set',
+		'LS Wrench Complete': 'LS Complete',
+
+		'Sign X': 'Sign X',
+		'Car X': 'Car X',
+		'LF Y': 'LF Y',
+		'LR Y': 'LR Y',
+
+		'Car Exit': 'Car Exit'
+	};
+
 	let current_metric = $state(null);
 
 	function update_metric(index, metricKey, value) {
@@ -303,6 +393,21 @@
 	}
 	function open_video_settings() {
 		alert('Open Video Settings');
+	}
+
+	function selectMetric(metricKey, tag) {
+		selectedMetric = metricKey;
+
+		const container = document.querySelector('#metrics_cont_outer');
+		const tagElement = document.querySelector(`[data-tag="${tag}"]`);
+
+		if (container && tagElement) {
+			const topPos = tagElement.offsetTop - container.offsetTop;
+			container.scrollTo({
+				top: topPos,
+				behavior: 'smooth'
+			});
+		}
 	}
 </script>
 
@@ -377,14 +482,17 @@
 			</div>
 			<div id="metrics_cont_outer">
 				<div id="metrics_cont">
-					<!-- ovo ne radi ali radim UI, odkomentarisi ono dole -->
 					{#each metrics as { tag, metrics: metricObj }, index}
-						<div class="tag-container">
-							<div class="tag-title">{tag}</div>
+						<div class="tag-container" data-tag={tag}>
+							<div class="tag-title">{keyMap[tag]}</div>
 							<div class="group_metrics_container">
 								{#each Object.entries(metricObj) as [metricKey, metricValue]}
-									<div class="metric_row">
-										<span>{metricKey}:</span>
+									<div
+										class="metric_row"
+										class:selected-metric={selectedMetric === metricKey}
+										onclick={() => selectMetric(metricKey, tag)}
+									>
+										<span class="metric-key">{keyMap[metricKey]}:</span>
 										{#if metricValue !== null}
 											<span class="value value-done">{metricValue}</span>
 										{:else}
@@ -395,9 +503,6 @@
 							</div>
 						</div>
 					{/each}
-
-					<!-- Ovo radi ali je ugaseno da bih radio UI na ovom iznad -->
-					<!-- <MetricView {currentCellIndex} {selectedTemplate} /> -->
 				</div>
 			</div>
 		</div>
@@ -531,6 +636,7 @@
 	}
 
 	#metrics_cont {
+		padding-bottom: calc(100vh - 550px);
 		/* overflow-y: scroll; */
 		overflow: visible;
 		/* height: 100%; */
@@ -591,32 +697,38 @@
 			border-bottom: none;
 			padding-bottom: 3px;
 		}
+		> .metric_row:last-child::before {
+			bottom: -4px;
+		}
+
 		> .metric_row:first-child {
 			border-top: none;
 			/* padding-top: 0; */
 		}
 		& :hover {
 			> * {
-				color: green;
 				transition: all 0.2s ease-in-out;
 			}
 			.value {
-				color: green;
-				background-color: rgb(199, 233, 199);
+				/* color: green;
+				background-color: rgb(199, 233, 199); */
 			}
 			.value-empty {
-				color: rgb(159, 210, 159);
+				/* color: rgb(159, 210, 159); */
 			}
 		}
 	}
 	.metric_row {
+		position: relative;
+
 		font-family: var(--main-font);
 		font-weight: 400;
 		font-size: 1.1rem;
 		margin: 0;
 		padding-block: 7px;
+		/* padding-inline: 7px; */
 		background-color: transparent;
-		border-bottom: #e0e0e0 1px solid;
+		border-bottom: #e6e6e6 1px solid;
 		grid-column: span 2;
 		display: grid;
 		grid-template-columns: 1fr auto;
@@ -624,6 +736,8 @@
 		cursor: pointer;
 
 		> * {
+			/* font-weight: 500; */
+			position: relative;
 			color: black;
 			margin: 0;
 			padding: 0;
@@ -631,9 +745,6 @@
 			justify-content: flex-start;
 			align-items: center;
 		}
-		/* > :nth-child(2) {
-			padding-right: 20px;
-		} */
 
 		& .value {
 			font-family: 'Roboto Mono', monospace;
@@ -642,6 +753,7 @@
 			justify-content: flex-end;
 
 			background-color: var(--main-dark);
+			/* background-color: transparent; */
 			border-radius: 5px;
 			padding-block: 2px;
 			padding-inline: 5px;
@@ -654,11 +766,58 @@
 		& .value-done {
 			color: black;
 		}
+
+		&.selected-metric {
+			border-bottom: 1px solid transparent;
+			> * {
+				transition: all 0.2s ease-in-out;
+				color: white;
+			}
+			& .metric-key {
+				/* color: green; */
+				/* font-weight: 700; */
+			}
+			& .value {
+				background-color: rgb(98, 98, 98);
+				/* color: green;
+				background-color: rgb(199, 233, 199); */
+				/* background-color: var(--main-background); */
+			}
+			& .value-empty {
+				/* color: rgb(159, 210, 159); */
+				color: #999999;
+			}
+		}
 	}
-	/* .group_metrics_container .metric_row:last-child {
-		border-bottom: none;
-		padding-bottom: 0;
-	} */
+
+	.metric_row::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -7px;
+		right: -7px;
+		bottom: 0;
+		border: 2px solid transparent;
+		border-radius: 10px;
+		background-color: var(--main-background);
+		/* transition: all 0.2s ease-in-out; */
+	}
+
+	.metric_row.selected-metric::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: -7px;
+		right: -7px;
+		bottom: 0;
+		/* background-color: rgb(211, 249, 211); */
+		background-color: rgb(69, 69, 69);
+		/* border: 2px solid black; */
+		border-radius: 10px;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+
+		transition: all 0.2s ease-in-out;
+	}
 
 	#video_part {
 		position: relative;
