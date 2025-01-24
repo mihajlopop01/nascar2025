@@ -8,7 +8,7 @@
     --nblue: #007ac2;
 
     --main-background: #f7f7f7;
-    --main-background: #f5f6f8;
+    --main-background: #f1f1f1;
     --main-light: #ffffff;
     --main-dark: #e1e1e1;
 
@@ -18,10 +18,69 @@
     --light-green: #a3adf9;
     --proba: #dcefe8;
 
-    --main-font: 'Poppins', sans-serif;
+    /* --main-font: 'Poppins', sans-serif; */
+    --main-font: 'Apple SF Pro', sans-serif;
+    --font-color: black;
+    --font-color-mid: #555;
     --grey-font: #ababab;
 
+    --button-color-dark: #7d7d7d;
+    --button-color-light: #e0e0e0;
+    --button-color-hover: #e0e0e0;
+
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
 }
+
+@font-face {
+    font-family: 'Apple SF Pro';
+    src: url('/fonts/SF-Pro-Display-Ultralight.otf') format('opentype');
+    font-weight: 100;
+}
+
+@font-face {
+    font-family: 'Apple SF Pro';
+    src: url('/fonts/SF-Pro-Display-Thin.otf') format('opentype');
+    font-weight: 200;
+}
+
+@font-face {
+    font-family: 'Apple SF Pro';
+    src: url('/fonts/SF-Pro-Display-Light.otf') format('opentype');
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: 'Apple SF Pro';
+    src: url('/fonts/SF-Pro.ttf') format('truetype');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Apple SF Pro';
+    src: url('/fonts/SF-Pro-Display-Regular.otf') format('opentype');
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: 'Apple SF Pro';
+    src: url('/fonts/SF-Pro-Display-Medium.otf') format('opentype');
+    font-weight: 600;
+}
+
+@font-face {
+    font-family: 'Apple SF Pro';
+    src: url('/fonts/SF-Pro-Display-Semibold.otf') format('opentype');
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: 'Apple SF Pro';
+    src: url('/fonts/SF-Pro-Display-Bold.otf') format('opentype');
+    font-weight: 800;
+}
+
+
 
 /* dark theme */
 @media(prefers-color-scheme: dark) {
@@ -47,7 +106,13 @@
     --font-color: white;
     --font-color-hover: black;
 
-    --main-background: grey;
+    --main-background: #1E1E1E;
+    --grey-font: #F0F0F0;
+    --main-green: #4169e1;
+    --light-green: #3F51B5;
+
+    --main-dark: #5e5e5e;
+
 }
 
 :global {
@@ -58,7 +123,7 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
+        font-family: var(--main-font);
         font-weight: 500;
     }
 
@@ -67,7 +132,7 @@
         margin: 0;
         padding: 0;
         height: 100%;
-        font-family: "Poppins", sans-serif;
+        font-family: var(--main-font);
         color-scheme: dark light;
     }
 
@@ -81,7 +146,7 @@
 
     @container (min-width: 40rem) {
         h1 {
-            font-family: 'Poppins', sans-serif;
+            font-family: var(--main-font);
         }
     }
 }
@@ -97,12 +162,7 @@
 }
 
 
-.dash-section {
-    background-color: white;
-    border-radius: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-}
 
 #main-section {
     min-width: 500px;
@@ -129,35 +189,4 @@ label {
 
 input[type="checkbox"] {
     margin-right: 10px;
-}
-
-button {
-    background-color: #007BFF;
-    /* a modern blue for buttons */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    /* rounded corners for the buttons */
-    margin-top: 20px;
-    /* adds space before the button */
-    transition: background-color 0.3s ease;
-
-    /* transition for when the button is hovered or focused */
-    &:hover,
-    &:focus {
-        background-color: #0056b3;
-        /* darker blue when the button is interacted with */
-    }
-
-    &:disabled {
-        background-color: #6c757d;
-        /* a grey color for disabled state */
-        cursor: not-allowed;
-        /* changes the cursor to indicate the button is disabled */
-        opacity: 0.65;
-        /* slightly transparent to enhance the disabled look */
-    }
 }

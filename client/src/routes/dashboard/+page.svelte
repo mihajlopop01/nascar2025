@@ -220,4 +220,27 @@
 			/* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 		}
 	}
+
+	button {
+		background-color: #007bff;
+		color: white;
+		border: none;
+		padding: 10px 20px;
+		font-size: 16px;
+		cursor: pointer;
+		border-radius: 5px;
+		margin-top: 20px;
+		transition: background-color 0.3s ease;
+
+		&:hover,
+		&:focus {
+			background-color: #0056b3;
+		}
+
+		&:disabled {
+			background-color: #6c757d;
+			cursor: not-allowed;
+			opacity: 0.65;
+		}
+	}
 </style>

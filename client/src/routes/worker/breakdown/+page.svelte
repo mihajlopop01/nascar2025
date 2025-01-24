@@ -28,7 +28,7 @@
 	}
 
 	onMount(() => {
-		checkAuth();
+		// checkAuth();
 		appState.page = 'breakdown';
 	});
 
@@ -38,15 +38,14 @@
 </script>
 
 <div class="worker-container">
-	{#if loading}
+	<!-- {#if loading}
 		<p>Loading...</p>
 	{:else if user}
-		<!-- <h1>Welcome, {user.displayName}</h1>
-		<button on:click={handleLogout}>Logout</button> -->
 		<VideoPlayer />
 	{:else}
 		<p>Please log in to access</p>
-	{/if}
+	{/if} -->
+	<VideoPlayer />
 </div>
 
 <style>

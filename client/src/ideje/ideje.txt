@@ -1,0 +1,17 @@
+novi izgled metrika (podeljeno po grupama po tockovima...):
+zasto: flow tokom rada:
+        pocetne metrike,
+        tocak,
+        tocak,
+        tocak
+        tocak,
+        srednje metrike,
+        tocak,
+        tocak,
+        tocak,
+        tocak,
+        krajnje metrike
+fokus je uvek na celini, zatim na delu celine
+
++ readability
++ faster search by eye

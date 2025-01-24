@@ -145,14 +145,14 @@
 	// Pera
 	let metrics = $state([
 		{
-			tag: 'General',
+			tag: 'Entry',
 			metrics: {
-				'Car Stop': null,
-				'RS Up': null,
-				'RS Drop': null,
-				'LS Up': null,
-				'LS Drop': null,
-				'Car Goes': null
+				'Car Stop': '01.11',
+				'RS Up': '02.22',
+				'RS Drop': '03.33',
+				'LS Up': '04.44',
+				'LS Drop': '05.55',
+				'Car Goes': '06.66'
 			}
 		},
 		{
@@ -192,8 +192,9 @@
 			}
 		},
 		{
-			tag: 'Pegs',
+			tag: 'General',
 			metrics: {
+				'Car Entry': null,
 				'RS Peg': null,
 				Dropoff: null,
 				'LS Peg': null
@@ -213,7 +214,6 @@
 		{
 			tag: 'Other',
 			metrics: {
-				Other: null,
 				Category: null
 			}
 		},
@@ -311,15 +311,12 @@
 <main>
 	<div id="left" class="dash-section">
 		<div id="left_controls" class="left_part card">
-			<button class="controls_button" onclick={open_pitstops}>Pit Stop Database</button>
+			<!-- <button class="controls_button" onclick={open_pitstops}>Pit Stop Database</button> -->
 			<input type="file" accept="video/*" multiple onchange={handleFileUpload} />
 		</div>
 		<div id="left_pitstop" class="left_part card">
 			<div class="left_part_header">
 				<h3 class="left_part_title">Pit Stop</h3>
-				<button id="button_edit_stop" class="left_part_header_button" onclick={stop_settings}
-					>?</button
-				>
 			</div>
 			<div id="stop_info">
 				<div id="stop_info_header">
@@ -337,9 +334,9 @@
 					</div>
 				</div>
 				<div id="stop_info_content">
-					<span class="stop_info_text_label">Lap:</span>
-					<span class="stop_info_text_label">Dur:</span>
-					<span class="stop_info_text_title">Type:</span>
+					<span class="stop_info_text_label">Lap</span>
+					<span class="stop_info_text_label">Dur</span>
+					<span class="stop_info_text_title">Type</span>
 					<span class="stop_info_text_content">12</span>
 					<span class="stop_info_text_content">12.33</span>
 					<span class="stop_info_text_content">4W</span>
@@ -349,7 +346,6 @@
 		<div id="left_work_info" class="left_part card">
 			<div class="left_part_header">
 				<h3 class="left_part_title">Work Tracker</h3>
-				<button class="left_part_header_button" onclick={work_settings}>?</button>
 			</div>
 			<div id="work_info">
 				<div id="pitstop-timeline">
@@ -378,10 +374,11 @@
 						<option value={template} selected={template === selectedTemplate}>{template}</option>
 					{/each}
 				</select>
-				<button class="left_part_header_button" onclick={metrics_settings}>?</button>
 			</div>
-			<div id="metrics_cont">
-				<!-- {#each metrics as { tag, metrics: metricObj }, index}
+			<div id="metrics_cont_outer">
+				<div id="metrics_cont">
+					<!-- ovo ne radi ali radim UI, odkomentarisi ono dole -->
+					{#each metrics as { tag, metrics: metricObj }, index}
 						<div class="tag-container">
 							<div class="tag-title">{tag}</div>
 							<div class="group_metrics_container">
@@ -389,17 +386,19 @@
 									<div class="metric_row">
 										<span>{metricKey}:</span>
 										{#if metricValue !== null}
-											<span>{metricValue}</span>
+											<span class="value value-done">{metricValue}</span>
 										{:else}
-											<span>00.00</span>
+											<span class="value value-empty">00.00</span>
 										{/if}
 									</div>
 								{/each}
 							</div>
 						</div>
-					{/each} -->
+					{/each}
 
-				<MetricView {currentCellIndex} {selectedTemplate} />
+					<!-- Ovo radi ali je ugaseno da bih radio UI na ovom iznad -->
+					<!-- <MetricView {currentCellIndex} {selectedTemplate} /> -->
+				</div>
 			</div>
 		</div>
 	</div>
@@ -426,42 +425,36 @@
 </main>
 
 <style>
-	:root {
-		--main-font: 'Poppins', sans-serif;
-		--main-color: black;
-		--background-color: #aaaaaa;
-		--background-color-alt: rgb(145, 145, 145);
-		--accent-color: rgb(121, 121, 121);
-	}
-
 	main {
 		padding: 5px;
-		height: 100vh;
 		display: grid;
 		grid-template-columns: 350px 1fr;
-		gap: 5px;
+		/* gap: 5px; */
 		background-color: var(--main-background);
 		color: var(--main-color);
 		font-family: var(--main-font);
 		font-weight: 500;
 	}
 
-	.section {
-		background-color: var(--main-light);
+	.dash-section {
+		background-color: transparent;
 		color: var(--main-color);
 		border-radius: 20px;
 	}
 	#left {
 		grid-column: 1;
 		display: grid;
-		grid-template-rows: 1fr 3fr 3fr 15fr;
-		gap: 10px;
+		grid-template-rows: auto auto auto 1fr;
+		gap: 20px;
 		height: calc(100vh - 10px);
 	}
 	#right {
 		grid-column: 2;
 		display: grid;
 		grid-template-rows: 1fr 100px;
+		> :first-child {
+			margin-bottom: 0 !important;
+		}
 	}
 	h3 {
 		font-size: 1rem;
@@ -469,7 +462,7 @@
 	}
 
 	button {
-		background-color: #7d7d7d;
+		background-color: var(--button-color-dark);
 		border: none;
 		color: white;
 		font-family: var(--main-font);
@@ -486,28 +479,11 @@
 		}
 	}
 
-	.left_part_header_button {
-		border-radius: 50%;
-		width: 25px;
-		height: 25px;
-		margin-left: auto;
-		background-color: #7d7d7d;
-		&:hover {
-			background-color: var(--main-color);
-			color: var(--background-color);
-			transition: all 0.2s ease-in-out;
-		}
-	}
-
-	#button_edit_stop {
-		content: 'Edit';
-	}
-
 	.card {
 		background-color: var(--main-dark);
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		border-radius: 10px;
-		padding: 10px;
+		box-shadow: var(--box-shadow);
+		border-radius: 20px;
+		padding: 15px;
 		margin: 10px;
 	}
 
@@ -517,6 +493,8 @@
 		justify-content: space-between;
 	}
 	.left_part_header {
+		line-height: 1;
+		margin-bottom: 5px;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
@@ -525,7 +503,7 @@
 
 	.left_part_title {
 		margin: 0;
-		color: #555;
+		color: var(--font-color-mid);
 	}
 
 	#left_controls {
@@ -544,16 +522,27 @@
 	#left_metrics {
 		margin-top: 0;
 		overflow-y: hidden;
+		padding-right: 5px;
+	}
+
+	#metrics_cont_outer {
+		overflow-y: scroll;
+		margin: 0;
 	}
 
 	#metrics_cont {
-		overflow-y: scroll;
-		height: 100%;
-		gap: 10px;
+		/* overflow-y: scroll; */
+		overflow: visible;
+		/* height: 100%; */
+		gap: 15px;
 		border-radius: 10px;
+		margin-right: 5px;
 		> * {
-			margin-right: 10px;
-			margin-bottom: 10px;
+			/* margin-right: 10px; */
+			margin-bottom: 15px;
+		}
+		> :last-child {
+			margin-bottom: 0;
 		}
 	}
 
@@ -583,26 +572,83 @@
 	}
 
 	.tag-container {
-		border-radius: 5px;
-		padding: 0.5rem;
-		background-color: #8c8c8c;
+		border-radius: 10px;
+		padding: 15px;
+		padding-inline: 20px;
+		background-color: var(--main-background);
+	}
+
+	.tag-title {
+		font-weight: 600;
+		margin-bottom: 3px;
+		font-size: 1.2rem;
 	}
 
 	.group_metrics_container {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
+		> .metric_row:last-child {
+			border-bottom: none;
+			padding-bottom: 3px;
+		}
+		> .metric_row:first-child {
+			border-top: none;
+			/* padding-top: 0; */
+		}
+		& :hover {
+			background-color: #ebebeb;
+			cursor: pointer;
+			/* border-radius: 10px; */
+		}
 	}
 	.metric_row {
-		margin: 5px;
-		padding: 5px;
-		border-radius: 5px;
-		background-color: var(--background-color);
+		font-family: var(--main-font);
+		font-weight: 400;
+		font-size: 1.1rem;
+		margin: 0;
+		padding-block: 7px;
+		background-color: transparent;
+		border-bottom: #e0e0e0 1px solid;
 		grid-column: span 2;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: 1fr auto;
 
 		cursor: pointer;
+
+		> * {
+			color: black;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+		}
+		/* > :nth-child(2) {
+			padding-right: 20px;
+		} */
+
+		& .value {
+			font-family: 'Roboto Mono', monospace;
+			font-size: 1.2rem;
+			/* line-height: 0; */
+			justify-content: flex-end;
+
+			background-color: var(--main-dark);
+			border-radius: 5px;
+			padding-block: 2px;
+			padding-inline: 5px;
+		}
+		& .value-empty {
+			color: #c2c2c2;
+		}
+		& .value-done {
+			color: black;
+		}
 	}
+	/* .group_metrics_container .metric_row:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+	} */
 
 	#video_part {
 		position: relative;
@@ -611,7 +657,7 @@
 
 	#video_container {
 		width: 100%;
-		height: 100%;
+		/* height: 100%; */
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -652,7 +698,7 @@
 	}
 
 	::-webkit-scrollbar {
-		width: 10px;
+		width: 5px;
 		border-radius: 5px;
 	}
 
@@ -662,14 +708,15 @@
 	}
 
 	::-webkit-scrollbar-thumb {
-		background: #888;
+		background: #cccccc;
 		border-radius: 5px;
 		transition: all 0.2s ease-in-out;
 	}
 
 	::-webkit-scrollbar-thumb:hover {
-		background: #555;
+		background: #898989;
 		transition: all 0.2s ease-in-out;
+		cursor: pointer;
 	}
 
 	/* Toni */
