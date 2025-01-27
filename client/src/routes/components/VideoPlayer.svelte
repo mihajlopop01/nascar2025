@@ -2,23 +2,27 @@
 	import { onMount } from 'svelte';
 	import MetricView from './MetricView.svelte';
 	import Playback from './Playback.svelte';
+	import MetricView2 from '../worker/breakdown/components/Metrics.svelte';
 
 	let selectedMetric = $state('Car Stop');
-	// let selectedTag = $state('Entry');
+	let timestamp = $state(null);
 
-	let selectedTemplate = $state('4 Tire'); // Default template
-
+	let selectedTemplate = $state('4 Tire');
 	const templates = ['4 Tire', '2 RS', '2 LS', 'Fuel Only'];
-
 	let video = $state(null);
 	let currentCellIndex = $state(0);
-	let timeDisplay = '0:00.000';
-	let timerDisplay = $state('0:00');
+	let currentTime = $state(0.0);
+	let paused = $state(true);
+	let duration = $state(0);
 
+	let keyboardMetricAction = $state(null);
+
+	let timerDisplay = $state('0:00');
 	let stopwatchInterval;
 	let elapsedTime = $state(0);
 
-	const frameDuration = 0.03;
+	let frameRate = 23.98;
+	const frameDuration = 1 / frameRate;
 	const cellNames = [
 		'carStop',
 		'rsUp',
@@ -47,9 +51,12 @@
 	];
 	let videos = []; // Niz videa sa panela
 	let currentPanel = $state('OH');
+	let current_metric = $state(null);
 	const panelNames = ['OH', 'E1', 'E2', 'E3'];
 
 	function handleFileUpload(event) {
+		currentTime = 0.0;
+
 		const files = Array.from(event.target.files);
 		if (files.length > 4) {
 			alert('You can only upload up to 4 videos.');
@@ -73,65 +80,80 @@
 		}, 1000);
 	}
 
+	function playBackward() {
+		currentTime = Math.max(currentTime - frameDuration * 2.5, 0);
+	}
+	var isPlayingBackward;
+
 	function handleKeydown(event) {
-		if (event.repeat) return;
+		event.preventDefault();
+		event.stopPropagation();
 		switch (event.code) {
 			case 'ArrowRight':
-				event.preventDefault();
 				stepFrame(1);
 				break;
 			case 'ArrowLeft':
-				event.preventDefault();
 				stepFrame(-1);
 				break;
+			case 'ArrowDown':
+				if (event.repeat) return;
+				video.play();
+				break;
+			case 'ArrowUp':
+				if (event.repeat) return;
+				isPlayingBackward = setInterval(playBackward, frameDuration * 2.5 * 1000);
+				break;
 			case 'Space':
-				event.preventDefault();
-				video.paused ? video.play() : video.pause();
-				break;
-
-			case 'F4':
-				event.preventDefault();
-				video.currentTime = Math.min(video.currentTime + 2, video.duration);
-				break;
-
-			case 'F5':
-				event.preventDefault();
-				video.currentTime = Math.min(video.currentTime + 5, video.duration);
-				break;
-
-			case 'F3':
-				event.preventDefault();
-				video.currentTime = Math.max(video.currentTime - 2, 0);
-				break;
-
-			case 'F2':
-				event.preventDefault();
-				video.currentTime = Math.max(video.currentTime - 5, 0);
+				if (event.repeat) return;
+				paused ? video.play() : video.pause();
 				break;
 			case 'F1':
-				event.preventDefault();
-				video.currentTime = 0;
+				if (event.repeat) return;
+				currentTime = 0;
 				break;
-
-			case 'Enter':
-				event.preventDefault();
-				const cellName = cellNames[currentCellIndex];
-				if (currentCellIndex >= 0 && currentCellIndex < cellNames.length) {
-					console.log(
-						`Enter pressed. Current cell index: ${currentCellIndex}, Time display: ${timeDisplay}`
-					);
-					//Inicijalizujemo custom evente updateTimeDisplay koji ce komponenta MetricView da osluskuje
-					const event = new CustomEvent('updateTimeDisplay', {
-						detail: { timeDisplay }
-					});
-					dispatchEvent(event);
+			case 'F2':
+				if (event.repeat) return;
+				currentTime = Math.max(currentTime - 5, 0);
+				break;
+			case 'F3':
+				if (event.repeat) return;
+				currentTime = Math.max(currentTime - 2, 0);
+				break;
+			case 'F4':
+				if (event.repeat) return;
+				currentTime = Math.min(currentTime + 2, duration);
+				break;
+			case 'F5':
+				if (event.repeat) return;
+				currentTime = Math.min(currentTime + 5, duration);
+				break;
+			case 'Tab':
+				if (event.shiftKey) {
+					keyboardMetricAction = 'previous';
 				}
+				if (event.repeat) return;
+				keyboardMetricAction = 'next';
+				break;
+			case 'Enter':
+				if (event.repeat) return;
+				keyboardMetricAction = 'enter';
 				break;
 		}
 	}
-	//Funkcija za navigaciju frejmova
+
+	function handleKeyup(event) {
+		if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
+			event.preventDefault();
+			event.stopPropagation();
+			if (isPlayingBackward) {
+				clearInterval(isPlayingBackward);
+			}
+			video.pause();
+		}
+	}
+
 	function stepFrame(direction) {
-		video.currentTime += direction * frameDuration;
+		currentTime += direction * frameDuration;
 		video.pause();
 	}
 
@@ -142,317 +164,53 @@
 	function switchPanel(panel) {
 		currentPanel = panel;
 		video.src = videos[panelNames.indexOf(panel)];
-		video.play(); //Ako zelimo da odmah krene video
-	}
-
-	// Pera
-	let metrics = $state([
-		{
-			tag: 'Entry',
-			metrics: {
-				'Car Stop': '01.11',
-				'RS Up': '02.22',
-				'RS Drop': '03.33',
-				'LS Up': '04.44',
-				'LS Drop': '05.55',
-				'Car Goes': '06.66'
-			}
-		},
-		{
-			tag: 'RF1',
-			metrics: {
-				'RF Nut Off Start': 12.33,
-				'RF Clear': null,
-				'RF Mount': null,
-				'RF Nut On Finish': null
-			}
-		},
-		{
-			tag: 'LF1',
-			metrics: {
-				'LF Nut Off Start': null,
-				'LF Clear': null,
-				'LF Mount': null,
-				'LF Nut On Finish': null
-			}
-		},
-		{
-			tag: 'RR1',
-			metrics: {
-				'RR Nut Off Start': null,
-				'RR Clear': null,
-				'RR Mount': null,
-				'RR Nut On Finish': null
-			}
-		},
-		{
-			tag: 'LR1',
-			metrics: {
-				'LR Nut Off Start': null,
-				'LR Clear': null,
-				'LR Mount': null,
-				'LR Nut On Finish': null
-			}
-		},
-		{
-			tag: 'General',
-			metrics: {
-				'Car Entry': null,
-				'RS Peg': null,
-				Dropoff: null,
-				'LS Peg': null
-			}
-		},
-		{
-			tag: 'Fuel',
-			metrics: {
-				'Can1 In': null,
-				'Can1 Out': null,
-				'Can2 In': null,
-				'Can2 Out': null,
-				'Fuel Added': null,
-				'Can1 Valid Fuel Flow': null
-			}
-		},
-		{
-			tag: 'Other',
-			metrics: {
-				'Other Category': null
-			}
-		},
-		{
-			tag: 'RF2',
-			metrics: {
-				'RF Nut On Finish': null,
-				'RF Pull': null,
-				'RF Nut On Start': null
-			}
-		},
-		{
-			tag: 'LF2',
-			metrics: {
-				'LF Nut On Finish': null,
-				'LF Pull': null,
-				'LF Nut On Start': null
-			}
-		},
-		{
-			tag: 'RR2',
-			metrics: {
-				'RR Nut On Finish': null,
-				'RR Pull': null,
-				'RR Nut On Start': null
-			}
-		},
-		{
-			tag: 'LR2',
-			metrics: {
-				'LR Nut On Finish': null,
-				'LR Pull': null,
-				'LR Nut On Start': null
-			}
-		},
-		{
-			tag: 'Wrench',
-			metrics: {
-				'RS Wrench Set': null,
-				'RS Wrench Complete': null,
-				'LS Wrench Set': null,
-				'LS Wrench Complete': null
-			}
-		},
-		{
-			tag: 'Position',
-			metrics: {
-				'Sign X': null,
-				'Car X': null,
-				'LF Y': null,
-				'LR Y': null
-			}
-		},
-		{
-			tag: 'Exit',
-			metrics: {
-				'Car Exit': null
-			}
-		}
-	]);
-	const keyMap = {
-		RF1: 'RF',
-		RF2: 'RF',
-		LF1: 'LF',
-		LF2: 'LF',
-		RR1: 'RR',
-		RR2: 'RR',
-		LR1: 'LR',
-		LR2: 'LR',
-		Entry: 'Entry',
-		General: 'General',
-		Fuel: 'Fuel',
-		Other: 'Other',
-		Wrench: 'Wrench',
-		Position: 'Position',
-		Exit: 'Exit',
-
-		'Car Stop': 'Car Stop',
-		'RS Up': 'RS Up',
-		'RS Drop': 'RS Drop',
-		'LS Up': 'LS Up',
-		'LS Drop': 'LS Drop',
-		'Car Goes': 'Car Goes',
-
-		'RF Nut Off Start': 'Nut Off Start',
-		'RF Clear': 'Clear',
-		'RF Mount': 'Mount',
-		'RF Nut On Finish': 'Nut On Finish',
-
-		'LF Nut Off Start': 'Nut Off Start',
-		'LF Clear': 'Clear',
-		'LF Mount': 'Mount',
-		'LF Nut On Finish': 'Nut On Finish',
-
-		'RR Nut Off Start': 'Nut Off Start',
-		'RR Clear': 'Clear',
-		'RR Mount': 'Mount',
-		'RR Nut On Finish': 'Nut On Finish',
-
-		'LR Nut Off Start': 'Nut Off Start',
-		'LR Clear': 'Clear',
-		'LR Mount': 'Mount',
-		'LR Nut On Finish': 'Nut On Finish',
-
-		'Car Entry': 'Car Entry',
-		'RS Peg': 'RS Peg',
-		Dropoff: 'Dropoff',
-		'LS Peg': 'LS Peg',
-
-		'Can1 In': 'Can1 In',
-		'Can1 Out': 'Can1 Out',
-		'Can2 In': 'Can2 In',
-		'Can2 Out': 'Can2 Out',
-		'Fuel Added': 'Fuel Added',
-		'Can1 Valid Fuel Flow': 'Can1 Valid',
-
-		'Other Category': 'Category',
-
-		'RF Nut On Finish': 'Nut On Finish',
-		'RF Pull': 'Pull',
-		'RF Nut On Start': 'Nut On Start',
-
-		'LF Nut On Finish': 'Nut On Finish',
-		'LF Pull': 'Pull',
-		'LF Nut On Start': 'Nut On Start',
-
-		'RR Nut On Finish': 'Nut On Finish',
-		'RR Pull': 'Pull',
-		'RR Nut On Start': 'Nut On Start',
-
-		'LR Nut On Finish': 'Nut On Finish',
-		'LR Pull': 'Pull',
-		'LR Nut On Start': 'Nut On Start',
-
-		'RS Wrench Set': 'RS Set',
-		'RS Wrench Complete': 'RS Complete',
-		'LS Wrench Set': 'LS Set',
-		'LS Wrench Complete': 'LS Complete',
-
-		'Sign X': 'Sign X',
-		'Car X': 'Car X',
-		'LF Y': 'LF Y',
-		'LR Y': 'LR Y',
-
-		'Car Exit': 'Car Exit'
-	};
-
-	let current_metric = $state(null);
-
-	function update_metric(index, metricKey, value) {
-		metrics[index].metrics[metricKey] = value;
-	}
-	function jump_to_metric_time(time) {
-		alert('Jump to ' + time);
-	}
-	function open_pitstops() {
-		alert('Open Pitstops');
-	}
-	function stop_settings() {
-		alert('Pit Stop');
-	}
-	function work_settings() {
-		alert('Work Tracker');
-	}
-	function metrics_settings() {
-		alert('Metrics');
-	}
-
-	function submit_work() {
-		alert('Submit Work');
-	}
-	function help_work() {
-		alert('Help Work');
-	}
-	function open_video_settings() {
-		alert('Open Video Settings');
-	}
-
-	function selectMetric(metricKey, tag) {
-		selectedMetric = metricKey;
-
-		const container = document.querySelector('#metrics_cont_outer');
-		const tagElement = document.querySelector(`[data-tag="${tag}"]`);
-
-		if (container && tagElement) {
-			const topPos = tagElement.offsetTop - container.offsetTop;
-			container.scrollTo({
-				top: topPos,
-				behavior: 'smooth'
-			});
-		}
+		video.play();
 	}
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window on:keyup={handleKeyup} on:keydown={handleKeydown} />
 
 <main>
-	<div id="left" class="dash-section">
-		<div id="left_controls" class="left_part card">
+	<div id="left">
+		<div id="database" class="card">
 			<!-- <button class="controls_button" onclick={open_pitstops}>Pit Stop Database</button> -->
-			<input type="file" accept="video/*" multiple onchange={handleFileUpload} />
+			<label class="file-upload-button">
+				Upload Videos
+				<input type="file" accept="video/*" multiple onchange={handleFileUpload} />
+			</label>
 		</div>
-		<div id="left_pitstop" class="left_part card">
+
+		<div id="pitstop" class="card">
 			<div class="left_part_header">
 				<h3 class="left_part_title">Pit Stop</h3>
 			</div>
 			<div id="stop_info">
 				<div id="stop_info_header">
 					<div class="stop_info_text">
-						<span class="stop_info_text_label">Car:</span>
 						<span class="stop_info_text_content">42</span>
+						<span class="stop_info_text_label">Car</span>
 					</div>
 					<div class="stop_info_text">
-						<span class="stop_info_text_label">Prior:</span>
-						<span class="stop_info_text_content">[1.1]</span>
-					</div>
-					<div class="stop_info_text">
-						<span class="stop_info_text_label">Stop:</span>
-						<span class="stop_info_text_content">3.</span>
+						<span class="stop_info_text_content">3</span>
+						<span class="stop_info_text_label">Stop</span>
 					</div>
 				</div>
 				<div id="stop_info_content">
-					<span class="stop_info_text_label">Lap</span>
-					<span class="stop_info_text_label">Dur</span>
-					<span class="stop_info_text_title">Type</span>
+					<span class="stop_info_text_content">Lap</span>
 					<span class="stop_info_text_content">12</span>
-					<span class="stop_info_text_content">12.33</span>
+					<span class="stop_info_text_content">Dur</span>
+					<span class="stop_info_text_content">12.3s</span>
+					<span class="stop_info_text_content">Type</span>
 					<span class="stop_info_text_content">4W</span>
 				</div>
 			</div>
 		</div>
-		<div id="left_work_info" class="left_part card">
+
+		<div id="work" class="card">
 			<div class="left_part_header">
 				<h3 class="left_part_title">Work Tracker</h3>
 			</div>
-			<div id="work_info">
+			<div id="work_info" style="visibility: hidden;">
 				<div id="pitstop-timeline">
 					<div class="pitstop-timeline-text">start</div>
 					<div class="pitstop-timeline-moment">23:45</div>
@@ -465,105 +223,78 @@
 					<span>Petar Jovanovic</span>
 				</div>
 				<div id="work_buttons_cont">
-					<button class="work_button" onclick={help_work}>Help</button>
-					<button class="work_button" onclick={submit_work}>Submit</button>
+					<button class="work_button">Help</button>
+					<button class="work_button">Submit</button>
 				</div>
 			</div>
 		</div>
+
 		<div id="left_metrics" class="left_part card">
 			<div class="left_part_header">
 				<h3 class="left_part_title">Metrics</h3>
-				<label for="stop-type">Type:</label>
-				<select id="stop-type" onchange={changeTemplate}>
-					{#each templates as template}
-						<option value={template} selected={template === selectedTemplate}>{template}</option>
-					{/each}
-				</select>
-			</div>
-			<div id="metrics_cont_outer">
-				<div id="metrics_cont">
-					{#each metrics as { tag, metrics: metricObj }, index}
-						<div class="tag-container" data-tag={tag}>
-							<div class="tag-title">{keyMap[tag]}</div>
-							<div class="group_metrics_container">
-								{#each Object.entries(metricObj) as [metricKey, metricValue]}
-									<div
-										class="metric_row"
-										class:selected-metric={selectedMetric === metricKey}
-										onclick={() => selectMetric(metricKey, tag)}
-									>
-										<span class="metric-key">{keyMap[metricKey]}:</span>
-										{#if metricValue !== null}
-											<span class="value value-done">{metricValue}</span>
-										{:else}
-											<span class="value value-empty">00.00</span>
-										{/if}
-									</div>
-								{/each}
-							</div>
-						</div>
-					{/each}
+
+				<div class="template-select">
+					<select id="stop-type" onchange={changeTemplate}>
+						{#each templates as template}
+							<option value={template} selected={template === selectedTemplate}>{template}</option>
+						{/each}
+					</select>
 				</div>
 			</div>
+
+			<svelte:boundary onerror={(error) => console.error(error)}>
+				<MetricView2 {selectedMetric} {currentTime} />
+
+				<!-- prop snippet -->
+				{#snippet failed(error, reset)}
+					<p>{error.message}</p>
+					<button onclick={reset}>Try again</button>
+				{/snippet}
+			</svelte:boundary>
 		</div>
 	</div>
 
-	<div id="right" class="dash-section">
-		<div id="video_part" class="right_part card">
-			<div id="video_container">
-				<video bind:this={video} muted width="100%">
-					<track kind="captions" src="" label="English" />
-				</video>
-			</div>
-			<div class="panel_selector">
-				{#each panelNames as panel}
-					<button class:selected={currentPanel === panel} onclick={() => switchPanel(panel)}>
-						{panel}
-					</button>
-				{/each}
-			</div>
+	<div id="right">
+		<div id="video_container" class="card">
+			<video bind:this={video} bind:currentTime bind:paused bind:duration muted track></video>
 		</div>
-		<div id="video_controls" class="right_part card">
-			<Playback {video} on:timeUpdate={(e) => (timeDisplay = e.detail)} />
+		<div id="video_controls" class="card">
+			<Playback {video} bind:currentTime bind:paused />
 		</div>
 	</div>
 </main>
 
 <style>
 	main {
-		padding: 5px;
+		padding: 7.5px;
 		display: grid;
 		grid-template-columns: 350px 1fr;
 		/* gap: 5px; */
 		background-color: var(--main-background);
 		color: var(--main-color);
 		font-family: var(--main-font);
-		font-weight: 500;
 	}
 
-	.dash-section {
-		background-color: transparent;
-		color: var(--main-color);
-		border-radius: 20px;
+	#left,
+	#right {
+		height: calc(100vh - 15px);
+		display: grid;
 	}
 	#left {
 		grid-column: 1;
-		display: grid;
 		grid-template-rows: auto auto auto 1fr;
-		gap: 20px;
-		height: calc(100vh - 10px);
 	}
 	#right {
 		grid-column: 2;
-		display: grid;
-		grid-template-rows: 1fr 100px;
-		> :first-child {
-			margin-bottom: 0 !important;
-		}
+		grid-template-rows: 1fr auto;
 	}
-	h3 {
-		font-size: 1rem;
-		font-weight: 500;
+
+	.card {
+		background-color: var(--main-dark);
+		/* box-shadow: var(--box-shadow); */
+		border-radius: 20px;
+		padding: 15px;
+		margin: 7.5px;
 	}
 
 	button {
@@ -584,22 +315,17 @@
 		}
 	}
 
-	.card {
-		background-color: var(--main-dark);
-		box-shadow: var(--box-shadow);
-		border-radius: 20px;
-		padding: 15px;
-		margin: 10px;
-	}
-
 	.left_part {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
 	}
 	.left_part_header {
+		height: 23px;
 		line-height: 1;
 		margin-bottom: 5px;
+		margin-right: 10px;
+		margin-bottom: 10px;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
@@ -607,49 +333,26 @@
 	}
 
 	.left_part_title {
+		font-size: 1.1rem;
+		font-weight: 400;
+		/* margin-top: 1px; */
 		margin: 0;
-		color: var(--font-color-mid);
+		margin-top: -2px;
+		margin-left: 2px;
+		color: grey;
 	}
 
-	#left_controls {
-		margin-bottom: 0px;
+	#database {
 	}
-	#left_pitstop {
-		margin-bottom: 0;
-		margin-top: 0;
+	#pitstop {
 	}
 
-	#left_work_info {
-		margin-top: 0;
-		margin-bottom: 0;
+	#work {
 	}
 
 	#left_metrics {
-		margin-top: 0;
 		overflow-y: hidden;
 		padding-right: 5px;
-	}
-
-	#metrics_cont_outer {
-		overflow-y: scroll;
-		margin: 0;
-	}
-
-	#metrics_cont {
-		padding-bottom: calc(100vh - 550px);
-		/* overflow-y: scroll; */
-		overflow: visible;
-		/* height: 100%; */
-		gap: 15px;
-		border-radius: 10px;
-		margin-right: 5px;
-		> * {
-			/* margin-right: 10px; */
-			margin-bottom: 15px;
-		}
-		> :last-child {
-			margin-bottom: 0;
-		}
 	}
 
 	#work_buttons_cont {
@@ -659,180 +362,59 @@
 	}
 
 	#stop_info {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
+		display: grid;
+		grid-template-columns: 2fr 1fr;
 	}
 
 	#stop_info_header {
-		gap: 10px;
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-		align-items: center;
-	}
-	#stop_info_content {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-		grid-template-rows: 1fr 1fr;
-	}
-
-	.tag-container {
-		border-radius: 10px;
-		padding: 15px;
-		padding-inline: 20px;
-		background-color: var(--main-background);
-	}
-
-	.tag-title {
-		font-weight: 600;
-		margin-bottom: 3px;
-		font-size: 1.2rem;
-	}
-
-	.group_metrics_container {
+		width: 100%;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		> .metric_row:last-child {
-			border-bottom: none;
-			padding-bottom: 3px;
-		}
-		> .metric_row:last-child::before {
-			bottom: -4px;
-		}
+		align-items: center;
 
-		> .metric_row:first-child {
-			border-top: none;
-			/* padding-top: 0; */
-		}
-		& :hover {
-			> * {
-				transition: all 0.2s ease-in-out;
-			}
-			.value {
-				/* color: green;
-				background-color: rgb(199, 233, 199); */
-			}
-			.value-empty {
-				/* color: rgb(159, 210, 159); */
-			}
-		}
-	}
-	.metric_row {
-		position: relative;
-
-		font-family: var(--main-font);
-		font-weight: 400;
-		font-size: 1.1rem;
-		margin: 0;
-		padding-block: 7px;
-		/* padding-inline: 7px; */
-		background-color: transparent;
-		border-bottom: #e6e6e6 1px solid;
-		grid-column: span 2;
-		display: grid;
-		grid-template-columns: 1fr auto;
-
-		cursor: pointer;
-
-		> * {
-			/* font-weight: 500; */
-			position: relative;
-			color: black;
-			margin: 0;
-			padding: 0;
+		> .stop_info_text {
+			line-height: 1;
 			display: flex;
-			justify-content: flex-start;
+			flex-direction: column;
+			justify-content: center;
 			align-items: center;
-		}
 
-		& .value {
-			font-family: 'Roboto Mono', monospace;
+			> .stop_info_text_label {
+				font-size: 1.2rem;
+				font-weight: 500;
+			}
+			> .stop_info_text_content {
+				font-size: 2rem;
+				font-weight: bold;
+			}
+		}
+	}
+	#stop_info_content {
+		width: 100%;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr 1fr 1fr;
+
+		> .stop_info_text_content {
 			font-size: 1.2rem;
-			/* line-height: 0; */
-			justify-content: flex-end;
-
-			background-color: var(--main-dark);
-			/* background-color: transparent; */
-			border-radius: 5px;
-			padding-block: 2px;
-			padding-inline: 5px;
-
-			transition: all 0.2s ease-in-out;
 		}
-		& .value-empty {
-			color: #c2c2c2;
-		}
-		& .value-done {
-			color: black;
-		}
-
-		&.selected-metric {
-			border-bottom: 1px solid transparent;
-			> * {
-				transition: all 0.2s ease-in-out;
-				color: white;
-			}
-			& .metric-key {
-				/* color: green; */
-				/* font-weight: 700; */
-			}
-			& .value {
-				background-color: rgb(98, 98, 98);
-				/* color: green;
-				background-color: rgb(199, 233, 199); */
-				/* background-color: var(--main-background); */
-			}
-			& .value-empty {
-				/* color: rgb(159, 210, 159); */
-				color: #999999;
-			}
-		}
-	}
-
-	.metric_row::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -7px;
-		right: -7px;
-		bottom: 0;
-		border: 2px solid transparent;
-		border-radius: 10px;
-		background-color: var(--main-background);
-		/* transition: all 0.2s ease-in-out; */
-	}
-
-	.metric_row.selected-metric::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -7px;
-		right: -7px;
-		bottom: 0;
-		/* background-color: rgb(211, 249, 211); */
-		background-color: rgb(69, 69, 69);
-		/* border: 2px solid black; */
-		border-radius: 10px;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-
-		transition: all 0.2s ease-in-out;
-	}
-
-	#video_part {
-		position: relative;
-		z-index: 1;
 	}
 
 	#video_container {
-		width: 100%;
-		/* height: 100%; */
-		display: flex;
 		justify-content: center;
 		align-items: center;
+		height: auto;
+		width: auto;
+		> video {
+			border-radius: 10px;
+			height: 100%;
+			width: 100%;
+			object-fit: contain;
+		}
 	}
 
 	#video_controls {
+		/* height: 100%; */
 	}
 
 	#work_info {
@@ -866,28 +448,6 @@
 		gap: 5px;
 	}
 
-	::-webkit-scrollbar {
-		width: 5px;
-		border-radius: 5px;
-	}
-
-	::-webkit-scrollbar-track {
-		background: transparent;
-		border-radius: 5px;
-	}
-
-	::-webkit-scrollbar-thumb {
-		background: #cccccc;
-		border-radius: 5px;
-		transition: all 0.2s ease-in-out;
-	}
-
-	::-webkit-scrollbar-thumb:hover {
-		background: #898989;
-		transition: all 0.2s ease-in-out;
-		cursor: pointer;
-	}
-
 	/* Toni */
 	.panel_selector {
 		position: absolute;
@@ -902,5 +462,63 @@
 	.panel_selector button {
 		flex: 1;
 		margin: 2px 5px;
+	}
+
+	.file-upload-button {
+		background-color: rgb(208, 208, 208);
+		border: none;
+		color: grey;
+		font-family: var(--main-font);
+		padding: 10px;
+		margin: 0;
+		border-radius: 10px;
+		text-align: center;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		display: inline-block;
+
+		&:hover {
+			background-color: rgb(178, 178, 178);
+			color: var(--background-color);
+		}
+
+		input[type='file'] {
+			display: none;
+		}
+	}
+
+	.template-select select {
+		background-color: var(--main-background);
+		background-color: rgb(208, 208, 208);
+		/* background-color: var(--main-dark); */
+		/* border: 2px solid rgb(211, 211, 211); */
+		border: none;
+		color: rgb(104, 104, 104);
+		color: grey;
+		font-family: var(--main-font);
+		font-size: 1.1rem;
+		/* width: 105px; */
+		padding-block: 2px;
+		padding-inline: 3px;
+		border-radius: 10px;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		/* -webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none; */
+		/* text-align-last: center; */
+
+		&:hover {
+			/* background-color: rgb(182, 182, 182); */
+			/* color: black; */
+		}
+
+		&:focus {
+			outline: none;
+		}
+
+		> option {
+			text-align: center;
+		}
 	}
 </style>

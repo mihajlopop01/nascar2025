@@ -1,0 +1,20 @@
+https://developer.chrome.com/docs/web-platform/best-practices/webcodecs
+
+https://www.youtube.com/watch?v=vGkdIByPzhE
+
+https://stackoverflow.com/questions/32699721/javascript-extract-video-frames-reliably
+
+
+https://stackoverflow.com/questions/62611353/how-to-get-frame-accurate-seeking-from-video-html-element/79388605?noredirect=1#comment140002710_79388605
+https://github.com/w3c/media-and-entertainment/issues/4
+https://webtiming.github.io/timingsrc/
+
+
+https://jordicenzano.github.io/frame-accurate-scrubbing/
+https://bitmovin.com/demos/frame-accurate-seeking/
+https://www.codemill.se/accuratevideo
+https://www.dmcinfo.com/latest-thinking/blog/id/9593/frame-accurate-video-scrubbing-in-the-client
+
+- mp4box + webcodes api (demux, decode, store, render)
+- <video> + .requestVideoFrameCallback
+- <video> + timingsrc

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { appState } from '../js/state.svelte.js';
 
-	let isCollapsed = $state(false);
+	let isCollapsed = $state(true);
 
 	function toggleTheme() {
 		appState.theme = appState.theme === 'light' ? 'dark' : 'light';
