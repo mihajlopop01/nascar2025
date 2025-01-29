@@ -1,418 +1,853 @@
 <script>
-	let selectedMetric2 = $state('Car Stop');
+	import { onMount } from 'svelte';
+	import { untrack } from 'svelte';
 
-	let { selectedMetric = $bindable(), currentTime, template } = $props();
-	$effect(() => {
-		// console.log('currentTime', currentTime);
+	let {
+		selectedMetric = $bindable(),
+		currentTime = $bindable(),
+		duration,
+		template,
+		keyboard
+	} = $props();
+
+	let metrics_list = $state({}),
+		metrics_order,
+		metrics_render;
+
+	let metrics_container;
+
+	let metrics = $state({
+		car_stop: null,
+		rs_up: null,
+		rs_drop: null,
+		ls_up: null,
+		ls_drop: null,
+		car_goes: null,
+		rf_nut_off_start: null,
+		rf_clear: null,
+		rf_mount: null,
+		rf_nut_on_finish: null,
+		lf_nut_off_start: null,
+		lf_clear: null,
+		lf_mount: null,
+		lf_nut_on_finish: null,
+		rr_nut_off_start: null,
+		rr_clear: null,
+		rr_mount: null,
+		rr_nut_on_finish: null,
+		lr_nut_off_start: null,
+		lr_clear: null,
+		lr_mount: null,
+		lr_nut_on_finish: null,
+		car_entry: null,
+		rs_peg: null,
+		dropoff: null,
+		ls_peg: null,
+		can1_in: null,
+		can1_out: null,
+		can2_in: null,
+		can2_out: null,
+		fuel_added: null,
+		can1_valid_fuel_flow: null,
+		other_category: null,
+		rf_nut_off_finish: null,
+		rf_pull: null,
+		rf_nut_on_start: null,
+		lf_nut_off_finish: null,
+		lf_pull: null,
+		lf_nut_on_start: null,
+		rr_nut_off_finish: null,
+		rr_pull: null,
+		rr_nut_on_start: null,
+		lr_nut_off_finish: null,
+		lr_pull: null,
+		lr_nut_on_start: null,
+		rs_wrench_set: null,
+		rs_wrench_complete: null,
+		ls_wrench_set: null,
+		ls_wrench_complete: null,
+		sign_position_x: null,
+		car_position_x: null,
+		lf_position_y: null,
+		lr_position_y: null,
+		car_exit: null
 	});
-
-	let metrics = $state([
+	const metrics2_order = Object.keys(metrics);
+	const metricsRender = [
 		{
 			tag: 'Entry',
+			priority: 'A',
 			metrics: {
-				'Car Stop': '01.11',
-				'RS Up': '02.22',
-				'RS Drop': '03.33',
-				'LS Up': '04.44',
-				'LS Drop': '05.55',
-				'Car Goes': '06.66'
+				car_stop: 'Car Stop',
+				rs_up: 'RS Up',
+				rs_drop: 'RS Drop',
+				ls_up: 'LS Up',
+				ls_drop: 'LS Drop',
+				car_goes: 'Car Goes'
 			}
 		},
 		{
-			tag: 'RF1',
+			tag: 'RF',
+			priority: 'B',
 			metrics: {
-				'RF Nut Off Start': 12.33,
-				'RF Clear': null,
-				'RF Mount': null,
-				'RF Nut On Finish': null
+				rf_nut_off_start: 'Nut Off Start',
+				rf_clear: 'Clear',
+				rf_mount: 'Mount',
+				rf_nut_on_finish: 'Nut On Finish'
 			}
 		},
 		{
-			tag: 'LF1',
+			tag: 'LF',
+			priority: 'B',
 			metrics: {
-				'LF Nut Off Start': null,
-				'LF Clear': null,
-				'LF Mount': null,
-				'LF Nut On Finish': null
+				lf_nut_off_start: 'Nut Off Start',
+				lf_clear: 'Clear',
+				lf_mount: 'Mount',
+				lf_nut_on_finish: 'Nut On Finish'
 			}
 		},
 		{
-			tag: 'RR1',
+			tag: 'RR',
+			priority: 'B',
 			metrics: {
-				'RR Nut Off Start': null,
-				'RR Clear': null,
-				'RR Mount': null,
-				'RR Nut On Finish': null
+				rr_nut_off_start: 'Nut Off Start',
+				rr_clear: 'Clear',
+				rr_mount: 'Mount',
+				rr_nut_on_finish: 'Nut On Finish'
 			}
 		},
 		{
-			tag: 'LR1',
+			tag: 'LR',
+			priority: 'B',
 			metrics: {
-				'LR Nut Off Start': null,
-				'LR Clear': null,
-				'LR Mount': null,
-				'LR Nut On Finish': null
+				lr_nut_off_start: 'Nut Off Start',
+				lr_clear: 'Clear',
+				lr_mount: 'Mount',
+				lr_nut_on_finish: 'Nut On Finish'
 			}
 		},
 		{
 			tag: 'General',
+			priority: 'B',
 			metrics: {
-				'Car Entry': null,
-				'RS Peg': null,
-				Dropoff: null,
-				'LS Peg': null
+				car_entry: 'Car Entry',
+				rs_peg: 'RS Peg',
+				dropoff: 'Dropoff',
+				ls_peg: 'LS Peg'
 			}
 		},
 		{
 			tag: 'Fuel',
+			priority: 'B',
 			metrics: {
-				'Can1 In': null,
-				'Can1 Out': null,
-				'Can2 In': null,
-				'Can2 Out': null,
-				'Fuel Added': null,
-				'Can1 Valid Fuel Flow': null
+				can1_in: 'Can1 In',
+				can1_out: 'Can1 Out',
+				can2_in: 'Can2 In',
+				can2_out: 'Can2 Out',
+				fuel_added: 'Fuel Added',
+				can1_valid_fuel_flow: 'Can1 Valid'
 			}
 		},
 		{
 			tag: 'Other',
+			priority: 'B',
 			metrics: {
-				'Other Category': null
+				other_category: 'Category'
 			}
 		},
 		{
-			tag: 'RF2',
+			tag: 'RF',
+			priority: 'C',
 			metrics: {
-				'RF Nut Off Finish': null,
-				'RF Pull': null,
-				'RF Nut On Start': null
+				rf_nut_off_finish: 'Nut Off Finish',
+				rf_pull: 'Pull',
+				rf_nut_on_start: 'Nut On Start'
 			}
 		},
 		{
-			tag: 'LF2',
+			tag: 'LF',
+			priority: 'C',
 			metrics: {
-				'LF Nut Off Finish': null,
-				'LF Pull': null,
-				'LF Nut On Start': null
+				lf_nut_off_finish: 'Nut Off Finish',
+				lf_pull: 'Pull',
+				lf_nut_on_start: 'Nut On Start'
 			}
 		},
 		{
-			tag: 'RR2',
+			tag: 'RR',
+			priority: 'C',
 			metrics: {
-				'RR Nut Off Finish': null,
-				'RR Pull': null,
-				'RR Nut On Start': null
+				rr_nut_off_finish: 'Nut Off Finish',
+				rr_pull: 'Pull',
+				rr_nut_on_start: 'Nut On Start'
 			}
 		},
 		{
-			tag: 'LR2',
+			tag: 'LR',
+			priority: 'C',
 			metrics: {
-				'LR Nut Off Finish': null,
-				'LR Pull': null,
-				'LR Nut On Start': null
+				lr_nut_off_finish: 'Nut Off Finish',
+				lr_pull: 'Pull',
+				lr_nut_on_start: 'Nut On Start'
 			}
 		},
 		{
 			tag: 'Wrench',
+			priority: 'C',
 			metrics: {
-				'RS Wrench Set': null,
-				'RS Wrench Complete': null,
-				'LS Wrench Set': null,
-				'LS Wrench Complete': null
+				rs_wrench_set: 'RS Set',
+				rs_wrench_complete: 'RS Complete',
+				ls_wrench_set: 'LS Set',
+				ls_wrench_complete: 'LS Complete'
 			}
 		},
 		{
 			tag: 'Position',
+			priority: 'C',
 			metrics: {
-				'Sign X': null,
-				'Car X': null,
-				'LF Y': null,
-				'LR Y': null
+				sign_position_x: 'Sign X',
+				car_position_x: 'Car X',
+				lf_position_y: 'LF Y',
+				lr_position_y: 'LR Y'
 			}
 		},
 		{
 			tag: 'Exit',
+			priority: 'C',
 			metrics: {
-				'Car Exit': null
+				car_exit: 'Car Exit'
 			}
 		}
-	]);
-	const keyMap = {
-		RF1: 'RF',
-		RF2: 'RF',
-		LF1: 'LF',
-		LF2: 'LF',
-		RR1: 'RR',
-		RR2: 'RR',
-		LR1: 'LR',
-		LR2: 'LR',
-		Entry: 'Entry',
-		General: 'General',
-		Fuel: 'Fuel',
-		Other: 'Other',
-		Wrench: 'Wrench',
-		Position: 'Position',
-		Exit: 'Exit',
-
-		'Car Stop': 'Car Stop',
-		'RS Up': 'RS Up',
-		'RS Drop': 'RS Drop',
-		'LS Up': 'LS Up',
-		'LS Drop': 'LS Drop',
-		'Car Goes': 'Car Goes',
-
-		'RF Nut Off Start': 'Nut Off Start',
-		'RF Clear': 'Clear',
-		'RF Mount': 'Mount',
-		'RF Nut On Finish': 'Nut On Finish',
-
-		'LF Nut Off Start': 'Nut Off Start',
-		'LF Clear': 'Clear',
-		'LF Mount': 'Mount',
-		'LF Nut On Finish': 'Nut On Finish',
-
-		'RR Nut Off Start': 'Nut Off Start',
-		'RR Clear': 'Clear',
-		'RR Mount': 'Mount',
-		'RR Nut On Finish': 'Nut On Finish',
-
-		'LR Nut Off Start': 'Nut Off Start',
-		'LR Clear': 'Clear',
-		'LR Mount': 'Mount',
-		'LR Nut On Finish': 'Nut On Finish',
-
-		'Car Entry': 'Car Entry',
-		'RS Peg': 'RS Peg',
-		Dropoff: 'Dropoff',
-		'LS Peg': 'LS Peg',
-
-		'Can1 In': 'Can1 In',
-		'Can1 Out': 'Can1 Out',
-		'Can2 In': 'Can2 In',
-		'Can2 Out': 'Can2 Out',
-		'Fuel Added': 'Fuel Added',
-		'Can1 Valid Fuel Flow': 'Can1 Valid',
-
-		'Other Category': 'Category',
-
-		'RF Nut Off Finish': 'Nut Off Finish',
-		'RF Pull': 'Pull',
-		'RF Nut On Start': 'Nut On Start',
-
-		'LF Nut Off Finish': 'Nut Off Finish',
-		'LF Pull': 'Pull',
-		'LF Nut On Start': 'Nut On Start',
-
-		'RR Nut Off Finish': 'Nut Off Finish',
-		'RR Pull': 'Pull',
-		'RR Nut On Start': 'Nut On Start',
-
-		'LR Nut Off Finish': 'Nut Off Finish',
-		'LR Pull': 'Pull',
-		'LR Nut On Start': 'Nut On Start',
-
-		'RS Wrench Set': 'RS Set',
-		'RS Wrench Complete': 'RS Complete',
-		'LS Wrench Set': 'LS Set',
-		'LS Wrench Complete': 'LS Complete',
-
-		'Sign X': 'Sign X',
-		'Car X': 'Car X',
-		'LF Y': 'LF Y',
-		'LR Y': 'LR Y',
-
-		'Car Exit': 'Car Exit'
-	};
-	const keyOrder = [
-		'Car Stop',
-		'RS Up',
-		'RS Drop',
-		'LS Up',
-		'LS Drop',
-		'Car Goes',
-		'RF Nut Off Start',
-		'RF Clear',
-		'RF Mount',
-		'RF Nut On Finish',
-		'LF Nut Off Start',
-		'LF Clear',
-		'LF Mount',
-		'LF Nut On Finish',
-		'RR Nut Off Start',
-		'RR Clear',
-		'RR Mount',
-		'RR Nut On Finish',
-		'LR Nut Off Start',
-		'LR Clear',
-		'LR Mount',
-		'LR Nut On Finish',
-		'Car Entry',
-		'RS Peg',
-		'Dropoff',
-		'LS Peg',
-		'Can1 In',
-		'Can1 Out',
-		'Can2 In',
-		'Can2 Out',
-		'Fuel Added',
-		'Can1 Valid Fuel Flow',
-		'Other Category',
-		'RF Nut Off Finish',
-		'RF Pull',
-		'RF Nut On Start',
-		'LF Nut Off Finish',
-		'LF Pull',
-		'LF Nut On Start',
-		'RR Nut Off Finish',
-		'RR Pull',
-		'RR Nut On Start',
-		'LR Nut Off Finish',
-		'LR Pull',
-		'LR Nut On Start',
-		'RS Wrench Set',
-		'RS Wrench Complete',
-		'LS Wrench Set',
-		'LS Wrench Complete',
-		'Sign X',
-		'Car X',
-		'LF Y',
-		'LR Y',
-		'Car Exit'
 	];
 
-	const metrics2 = {
-		'Car Stop': null,
-		'RS Up': null,
-		'RS Drop': null,
-		'LS Up': null,
-		'LS Drop': null,
-		'Car Goes': null,
-		'RF Nut Off Start': null,
-		'RF Clear': null,
-		'RF Mount': null,
-		'RF Nut On Finish': null,
-		'LF Nut Off Start': null,
-		'LF Clear': null,
-		'LF Mount': null,
-		'LF Nut On Finish': null,
-		'RR Nut Off Start': null,
-		'RR Clear': null,
-		'RR Mount': null,
-		'RR Nut On Finish': null,
-		'LR Nut Off Start': null,
-		'LR Clear': null,
-		'LR Mount': null,
-		'LR Nut On Finish': null,
-		'Car Entry': null,
-		'RS Peg': null,
-		Dropoff: null,
-		'LS Peg': null,
-		'Can1 In': null,
-		'Can1 Out': null,
-		'Can2 In': null,
-		'Can2 Out': null,
-		'Fuel Added': null,
-		'Can1 Valid Fuel Flow': null,
-		'Other Category': null,
-		'RF Nut Off Finish': null,
-		'RF Pull': null,
-		'RF Nut On Start': null,
-		'LF Nut Off Finish': null,
-		'LF Pull': null,
-		'LF Nut On Start': null,
-		'RR Nut Off Finish': null,
-		'RR Pull': null,
-		'RR Nut On Start': null,
-		'LR Nut Off Finish': null,
-		'LR Pull': null,
-		'LR Nut On Start': null,
-		'RS Wrench Set': null,
-		'RS Wrench Complete': null,
-		'LS Wrench Set': null,
-		'LS Wrench Complete': null,
-		'Sign X': null,
-		'Car X': null,
-		'LF Y': null,
-		'LR Y': null,
-		'Car Exit': null
-	};
+	function getMetricsFromTemplate(template) {
+		switch (template) {
+			case '4 Tire':
+				return {
+					metrics_list: {
+						car_stop: null,
+						rs_up: null,
+						rs_drop: null,
+						ls_up: null,
+						ls_drop: null,
+						car_goes: null,
+						rf_nut_off_start: null,
+						rf_clear: null,
+						rf_mount: null,
+						rf_nut_on_finish: null,
+						lf_nut_off_start: null,
+						lf_clear: null,
+						lf_mount: null,
+						lf_nut_on_finish: null,
+						rr_nut_off_start: null,
+						rr_clear: null,
+						rr_mount: null,
+						rr_nut_on_finish: null,
+						lr_nut_off_start: null,
+						lr_clear: null,
+						lr_mount: null,
+						lr_nut_on_finish: null,
+						car_entry: null,
+						rs_peg: null,
+						dropoff: null,
+						ls_peg: null,
+						can1_in: null,
+						can1_out: null,
+						can2_in: null,
+						can2_out: null,
+						fuel_added: null,
+						can1_valid_fuel_flow: null,
+						other_category: null,
+						rf_nut_off_finish: null,
+						rf_pull: null,
+						rf_nut_on_start: null,
+						lf_nut_off_finish: null,
+						lf_pull: null,
+						lf_nut_on_start: null,
+						rr_nut_off_finish: null,
+						rr_pull: null,
+						rr_nut_on_start: null,
+						lr_nut_off_finish: null,
+						lr_pull: null,
+						lr_nut_on_start: null,
+						rs_wrench_set: null,
+						rs_wrench_complete: null,
+						ls_wrench_set: null,
+						ls_wrench_complete: null,
+						sign_position_x: null,
+						car_position_x: null,
+						lf_position_y: null,
+						lr_position_y: null,
+						car_exit: null
+					},
+					metrics_render: [
+						{
+							tag: 'Entry',
+							priority: 'A',
+							metrics: {
+								car_stop: 'Car Stop',
+								rs_up: 'RS Up',
+								rs_drop: 'RS Drop',
+								ls_up: 'LS Up',
+								ls_drop: 'LS Drop',
+								car_goes: 'Car Goes'
+							}
+						},
+						{
+							tag: 'RF',
+							priority: 'B',
+							metrics: {
+								rf_nut_off_start: 'Nut Off Start',
+								rf_clear: 'Clear',
+								rf_mount: 'Mount',
+								rf_nut_on_finish: 'Nut On Finish'
+							}
+						},
+						{
+							tag: 'LF',
+							priority: 'B',
+							metrics: {
+								lf_nut_off_start: 'Nut Off Start',
+								lf_clear: 'Clear',
+								lf_mount: 'Mount',
+								lf_nut_on_finish: 'Nut On Finish'
+							}
+						},
+						{
+							tag: 'RR',
+							priority: 'B',
+							metrics: {
+								rr_nut_off_start: 'Nut Off Start',
+								rr_clear: 'Clear',
+								rr_mount: 'Mount',
+								rr_nut_on_finish: 'Nut On Finish'
+							}
+						},
+						{
+							tag: 'LR',
+							priority: 'B',
+							metrics: {
+								lr_nut_off_start: 'Nut Off Start',
+								lr_clear: 'Clear',
+								lr_mount: 'Mount',
+								lr_nut_on_finish: 'Nut On Finish'
+							}
+						},
+						{
+							tag: 'General',
+							priority: 'B',
+							metrics: {
+								car_entry: 'Car Entry',
+								rs_peg: 'RS Peg',
+								dropoff: 'Dropoff',
+								ls_peg: 'LS Peg'
+							}
+						},
+						{
+							tag: 'Fuel',
+							priority: 'B',
+							metrics: {
+								can1_in: 'Can1 In',
+								can1_out: 'Can1 Out',
+								can2_in: 'Can2 In',
+								can2_out: 'Can2 Out',
+								fuel_added: 'Fuel Added',
+								can1_valid_fuel_flow: 'Can1 Valid'
+							}
+						},
+						{
+							tag: 'Other',
+							priority: 'B',
+							metrics: {
+								other_category: 'Category'
+							}
+						},
+						{
+							tag: 'RF',
+							priority: 'C',
+							metrics: {
+								rf_nut_off_finish: 'Nut Off Finish',
+								rf_pull: 'Pull',
+								rf_nut_on_start: 'Nut On Start'
+							}
+						},
+						{
+							tag: 'LF',
+							priority: 'C',
+							metrics: {
+								lf_nut_off_finish: 'Nut Off Finish',
+								lf_pull: 'Pull',
+								lf_nut_on_start: 'Nut On Start'
+							}
+						},
+						{
+							tag: 'RR',
+							priority: 'C',
+							metrics: {
+								rr_nut_off_finish: 'Nut Off Finish',
+								rr_pull: 'Pull',
+								rr_nut_on_start: 'Nut On Start'
+							}
+						},
+						{
+							tag: 'LR',
+							priority: 'C',
+							metrics: {
+								lr_nut_off_finish: 'Nut Off Finish',
+								lr_pull: 'Pull',
+								lr_nut_on_start: 'Nut On Start'
+							}
+						},
+						{
+							tag: 'Wrench',
+							priority: 'C',
+							metrics: {
+								rs_wrench_set: 'RS Set',
+								rs_wrench_complete: 'RS Complete',
+								ls_wrench_set: 'LS Set',
+								ls_wrench_complete: 'LS Complete'
+							}
+						},
+						{
+							tag: 'Position',
+							priority: 'C',
+							metrics: {
+								sign_position_x: 'Sign X',
+								car_position_x: 'Car X',
+								lf_position_y: 'LF Y',
+								lr_position_y: 'LR Y'
+							}
+						},
+						{
+							tag: 'Exit',
+							priority: 'C',
+							metrics: {
+								car_exit: 'Car Exit'
+							}
+						}
+					]
+				};
+			case '2 RS':
+				return {
+					metrics_list: {
+						car_stop: null,
+						rs_up: null,
+						rs_drop: null,
+						car_goes: null,
+						rf_nut_off_start: null,
+						rf_clear: null,
+						rf_mount: null,
+						rf_nut_on_finish: null,
+						rr_nut_off_start: null,
+						rr_clear: null,
+						rr_mount: null,
+						rr_nut_on_finish: null,
+						car_entry: null,
+						rs_peg: null,
+						dropoff: null,
+						can1_in: null,
+						can1_out: null,
+						can2_in: null,
+						can2_out: null,
+						fuel_added: null,
+						can1_valid_fuel_flow: null,
+						other_category: null,
+						rf_nut_off_finish: null,
+						rf_pull: null,
+						rf_nut_on_start: null,
+						rr_nut_off_finish: null,
+						rr_pull: null,
+						rr_nut_on_start: null,
+						rs_wrench_set: null,
+						rs_wrench_complete: null,
+						ls_wrench_set: null,
+						ls_wrench_complete: null,
+						sign_position_x: null,
+						car_position_x: null,
+						lf_position_y: null,
+						lr_position_y: null,
+						car_exit: null
+					},
+					metrics_render: [
+						{
+							tag: 'Entry',
+							priority: 'A',
+							metrics: {
+								car_stop: 'Car Stop',
+								rs_up: 'RS Up',
+								rs_drop: 'RS Drop',
+								car_goes: 'Car Goes'
+							}
+						},
+						{
+							tag: 'RF',
+							priority: 'B',
+							metrics: {
+								rf_nut_off_start: 'Nut Off Start',
+								rf_clear: 'Clear',
+								rf_mount: 'Mount',
+								rf_nut_on_finish: 'Nut On Finish'
+							}
+						},
+						{
+							tag: 'RR',
+							priority: 'B',
+							metrics: {
+								rr_nut_off_start: 'Nut Off Start',
+								rr_clear: 'Clear',
+								rr_mount: 'Mount',
+								rr_nut_on_finish: 'Nut On Finish'
+							}
+						},
+						{
+							tag: 'General',
+							priority: 'B',
+							metrics: {
+								car_entry: 'Car Entry',
+								rs_peg: 'RS Peg',
+								dropoff: 'Dropoff'
+							}
+						},
+						{
+							tag: 'Fuel',
+							priority: 'B',
+							metrics: {
+								can1_in: 'Can1 In',
+								can1_out: 'Can1 Out',
+								can2_in: 'Can2 In',
+								can2_out: 'Can2 Out',
+								fuel_added: 'Fuel Added',
+								can1_valid_fuel_flow: 'Can1 Valid'
+							}
+						},
+						{
+							tag: 'Other',
+							priority: 'B',
+							metrics: {
+								other_category: 'Category'
+							}
+						},
+						{
+							tag: 'RF',
+							priority: 'C',
+							metrics: {
+								rf_nut_off_finish: 'Nut Off Finish',
+								rf_pull: 'Pull',
+								rf_nut_on_start: 'Nut On Start'
+							}
+						},
 
-	let metricIndex = keyOrder.indexOf(selectedMetric);
+						{
+							tag: 'RR',
+							priority: 'C',
+							metrics: {
+								rr_nut_off_finish: 'Nut Off Finish',
+								rr_pull: 'Pull',
+								rr_nut_on_start: 'Nut On Start'
+							}
+						},
 
-	function selectMetric(metricKey, tag) {
+						{
+							tag: 'Wrench',
+							priority: 'C',
+							metrics: {
+								rs_wrench_set: 'RS Set',
+								rs_wrench_complete: 'RS Complete',
+								ls_wrench_set: 'LS Set',
+								ls_wrench_complete: 'LS Complete'
+							}
+						},
+						{
+							tag: 'Position',
+							priority: 'C',
+							metrics: {
+								sign_position_x: 'Sign X',
+								car_position_x: 'Car X',
+								lf_position_y: 'LF Y',
+								lr_position_y: 'LR Y'
+							}
+						},
+						{
+							tag: 'Exit',
+							priority: 'C',
+							metrics: {
+								car_exit: 'Car Exit'
+							}
+						}
+					]
+				};
+			case '2 LS':
+				return {
+					metrics_list: {
+						car_stop: null,
+						ls_up: null,
+						ls_drop: null,
+						car_goes: null,
+						lf_nut_off_start: null,
+						lf_clear: null,
+						lf_mount: null,
+						lf_nut_on_finish: null,
+						lr_nut_off_start: null,
+						lr_clear: null,
+						lr_mount: null,
+						lr_nut_on_finish: null,
+						car_entry: null,
+						dropoff: null,
+						ls_peg: null,
+						can1_in: null,
+						can1_out: null,
+						can2_in: null,
+						can2_out: null,
+						fuel_added: null,
+						can1_valid_fuel_flow: null,
+						other_category: null,
+						lf_nut_off_finish: null,
+						lf_pull: null,
+						lf_nut_on_start: null,
+						lr_nut_off_finish: null,
+						lr_pull: null,
+						lr_nut_on_start: null,
+						rs_wrench_set: null,
+						rs_wrench_complete: null,
+						ls_wrench_set: null,
+						ls_wrench_complete: null,
+						sign_position_x: null,
+						car_position_x: null,
+						lf_position_y: null,
+						lr_position_y: null,
+						car_exit: null
+					},
+					metrics_render: [
+						{
+							tag: 'Entry',
+							priority: 'A',
+							metrics: {
+								car_stop: 'Car Stop',
+								rs_up: 'RS Up',
+								rs_drop: 'RS Drop',
+								ls_up: 'LS Up',
+								ls_drop: 'LS Drop',
+								car_goes: 'Car Goes'
+							}
+						},
+
+						{
+							tag: 'LF',
+							priority: 'B',
+							metrics: {
+								lf_nut_off_start: 'Nut Off Start',
+								lf_clear: 'Clear',
+								lf_mount: 'Mount',
+								lf_nut_on_finish: 'Nut On Finish'
+							}
+						},
+
+						{
+							tag: 'LR',
+							priority: 'B',
+							metrics: {
+								lr_nut_off_start: 'Nut Off Start',
+								lr_clear: 'Clear',
+								lr_mount: 'Mount',
+								lr_nut_on_finish: 'Nut On Finish'
+							}
+						},
+						{
+							tag: 'General',
+							priority: 'B',
+							metrics: {
+								car_entry: 'Car Entry',
+								dropoff: 'Dropoff',
+								ls_peg: 'LS Peg'
+							}
+						},
+						{
+							tag: 'Fuel',
+							priority: 'B',
+							metrics: {
+								can1_in: 'Can1 In',
+								can1_out: 'Can1 Out',
+								can2_in: 'Can2 In',
+								can2_out: 'Can2 Out',
+								fuel_added: 'Fuel Added',
+								can1_valid_fuel_flow: 'Can1 Valid'
+							}
+						},
+						{
+							tag: 'Other',
+							priority: 'B',
+							metrics: {
+								other_category: 'Category'
+							}
+						},
+						{
+							tag: 'RF',
+							priority: 'C',
+							metrics: {
+								rf_nut_off_finish: 'Nut Off Finish',
+								rf_pull: 'Pull',
+								rf_nut_on_start: 'Nut On Start'
+							}
+						},
+						{
+							tag: 'LF',
+							priority: 'C',
+							metrics: {
+								lf_nut_off_finish: 'Nut Off Finish',
+								lf_pull: 'Pull',
+								lf_nut_on_start: 'Nut On Start'
+							}
+						},
+
+						{
+							tag: 'LR',
+							priority: 'C',
+							metrics: {
+								lr_nut_off_finish: 'Nut Off Finish',
+								lr_pull: 'Pull',
+								lr_nut_on_start: 'Nut On Start'
+							}
+						},
+						{
+							tag: 'Wrench',
+							priority: 'C',
+							metrics: {
+								rs_wrench_set: 'RS Set',
+								rs_wrench_complete: 'RS Complete',
+								ls_wrench_set: 'LS Set',
+								ls_wrench_complete: 'LS Complete'
+							}
+						},
+						{
+							tag: 'Position',
+							priority: 'C',
+							metrics: {
+								sign_position_x: 'Sign X',
+								car_position_x: 'Car X',
+								lf_position_y: 'LF Y',
+								lr_position_y: 'LR Y'
+							}
+						},
+						{
+							tag: 'Exit',
+							priority: 'C',
+							metrics: {
+								car_exit: 'Car Exit'
+							}
+						}
+					]
+				};
+			case 'Fuel Only':
+				return {
+					metrics_list: {},
+					metrics_render: []
+				};
+			default:
+				throw new Error('Invalid template');
+			// return {};
+		}
+	}
+
+	onMount(() => {
+		metrics_container = document.querySelector('#metrics_cont_outer');
+		try {
+			console.log('Template: ', template);
+			if (template) {
+				({ metrics_list, metrics_render } = getMetricsFromTemplate(template));
+				metrics_order = Object.keys(metrics_list);
+			}
+		} catch (error) {
+			console.error('Neuspesno postavljen template.', error);
+		}
+	});
+
+	function selectMetric(metricKey, selectedElement) {
 		selectedMetric = metricKey;
-		metricIndex = keyOrder.indexOf(selectedMetric);
+		if (metrics[metricKey]) {
+			currentTime = metrics[metricKey];
+		}
 
-		const container = document.querySelector('#metrics_cont_outer');
-		const tagElement = document.querySelector(`[data-tag="${tag}"]`);
+		const tagElement = selectedElement.closest('.tag-container');
 
-		if (container && tagElement) {
-			const topPos = tagElement.offsetTop - container.offsetTop;
-			container.scrollTo({
+		if (metrics_container && tagElement) {
+			const topPos = tagElement.offsetTop - metrics_container.offsetTop;
+			metrics_container.scrollTo({
 				top: topPos,
 				behavior: 'smooth'
 			});
 		}
 	}
 
-	function nextMetric(e, metricKey, tag) {
-		e.preventDefault();
-		e.stopPropagation();
-
-		if (e.key === 'Enter') {
-			console.log('Enter pressed. Current metric index:', metricIndex);
-		} else if (e.key !== 'Tab') {
+	function processKeyboard(key) {
+		if (key === 'delete') {
+			metrics[selectedMetric] = null;
 			return;
 		}
+		let newIndex = metrics_order.indexOf(selectedMetric);
+		if (key === 'enter') {
+			if (!duration) return;
+			metrics[selectedMetric] = currentTime;
+			newIndex++;
+		}
+		if (key == 'next') newIndex++;
+		else if (key == 'previous') newIndex--;
+		if (newIndex < 0 || newIndex >= metrics_order.length) return;
+		selectedMetric = metrics_order[newIndex];
+		if (metrics[selectedMetric]) {
+			currentTime = metrics[selectedMetric];
+		}
 
-		const newIndex = metricIndex + (e.shiftKey ? -1 : 1);
-		if (newIndex < 0 || newIndex >= keyOrder.length) return;
-
-		const container = document.querySelector('#metrics_cont_outer');
-		const currentScrollTop = container?.scrollTop || 0; // Store current scroll position
-
-		metricIndex = newIndex;
-		selectedMetric = keyOrder[metricIndex];
-
+		const currentScrollTop = metrics_container?.scrollTop || 0;
 		setTimeout(() => {
 			const selectedElement = document.querySelector('.selected-metric');
 			selectedElement?.focus();
 
 			const tagElement = selectedElement?.closest('.tag-container');
 
-			if (container && tagElement) {
+			if (metrics_container && tagElement) {
 				// Temporarily set scroll to stored position
-				container.scrollTop = currentScrollTop;
+				metrics_container.scrollTop = currentScrollTop;
 
-				container.scrollTo({
-					top: tagElement.offsetTop - container.offsetTop,
+				metrics_container.scrollTo({
+					top: tagElement.offsetTop - metrics_container.offsetTop,
 					behavior: 'smooth'
 				});
 			}
 		}, 0);
 	}
+
+	$effect(() => {
+		let { key } = keyboard;
+		untrack(() => processKeyboard(key));
+	});
 </script>
 
 <div id="metrics_cont_outer">
 	<div id="metrics_cont">
-		{#each metrics as { tag, metrics: metricObj }, index}
+		{#each metricsRender as { tag, metrics: metricGroup, priority }}
 			<div class="tag-container" data-tag={tag}>
-				<div class="tag-title">{keyMap[tag]}</div>
+				<div class="tag_header">
+					<div class="tag-title">{tag}</div>
+					<div class="priority_tag">{priority}</div>
+				</div>
 				<div class="group_metrics_container">
-					{#each Object.entries(metricObj) as [metricKey, metricValue]}
+					{#each Object.entries(metricGroup) as [metricKey, metricTitle]}
 						<div
 							class="metric_row"
 							class:selected-metric={selectedMetric === metricKey}
-							onclick={() => selectMetric(metricKey, tag)}
-							onkeydown={(e) => nextMetric(e, metricKey, tag)}
+							onclick={(e) => selectMetric(metricKey, e.currentTarget)}
+							onkeydown={() => {}}
 							role="button"
 							tabindex="0"
+							data-metric={metricKey}
 						>
-							<span class="metric-key">{keyMap[metricKey]}:</span>
-							{#if metricValue !== null}
-								<span class="value value-done">{metricValue}</span>
+							<span class="metric-key">{metricTitle}:</span>
+							{#if metrics[metricKey] !== null}
+								<span class="value value-done"
+									>{metrics[metricKey]?.toFixed(2).padStart(5, '0')}</span
+								>
 							{:else}
-								<span class="value value-empty">00.00</span>
+								<span class="value value-empty">--.--</span>
 							{/if}
 						</div>
 					{/each}
@@ -429,7 +864,7 @@
 	}
 
 	#metrics_cont {
-		padding-bottom: calc(100vh - 595px);
+		padding-bottom: calc(100vh - 515px);
 		/* overflow-y: scroll; */
 		overflow: visible;
 		/* height: 100%; */
@@ -452,10 +887,21 @@
 		background-color: var(--main-background);
 	}
 
+	.tag_header {
+		display: flex;
+		justify-content: space-between;
+		font-size: 1.2rem;
+	}
+
 	.tag-title {
 		font-weight: 600;
 		margin-bottom: 3px;
 		font-size: 1.2rem;
+	}
+
+	.priority_tag {
+		font-weight: 400;
+		color: rgb(208, 208, 208);
 	}
 
 	.group_metrics_container {
@@ -478,11 +924,10 @@
 				transition: all 0.2s ease-in-out;
 			}
 			.value {
-				/* color: green;
-				background-color: rgb(199, 233, 199); */
+				background-color: var(--light-green);
 			}
 			.value-empty {
-				/* color: rgb(159, 210, 159); */
+				color: rgb(109, 109, 109);
 			}
 		}
 	}
@@ -529,7 +974,7 @@
 			transition: all 0.2s ease-in-out;
 		}
 		& .value-empty {
-			color: #c2c2c2;
+			color: #b5b5b5;
 		}
 		& .value-done {
 			color: black;
@@ -547,13 +992,15 @@
 			}
 			& .value {
 				background-color: rgb(107, 107, 107);
+				background-color: var(--light-green);
+				color: black;
 				/* color: green;
 				background-color: rgb(199, 233, 199); */
 				/* background-color: var(--main-background); */
 			}
 			& .value-empty {
 				/* color: rgb(159, 210, 159); */
-				color: #999999;
+				color: rgb(109, 109, 109);
 			}
 		}
 
@@ -597,6 +1044,7 @@
 		bottom: 0;
 		/* background-color: rgb(211, 249, 211); */
 		background-color: rgb(69, 69, 69);
+		background-color: var(--main-green);
 		/* border: 2px solid black; */
 		border-radius: 10px;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);

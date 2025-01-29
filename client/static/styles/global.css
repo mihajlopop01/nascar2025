@@ -12,10 +12,11 @@
     --main-light: #ffffff;
     --main-dark: #e1e1e1;
 
-    --main-green: #00a652;
-    --main-green: #00118f;
-    --light-green: #b8e3ce;
-    --light-green: #a3adf9;
+
+
+    /* --main-green: #007ac2; */
+    --main-green: #e4002b;
+    --light-green: var(--main-dark);
     --proba: #dcefe8;
 
     /* --main-font: 'Poppins', sans-serif; */

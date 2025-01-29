@@ -18,3 +18,5 @@ https://www.dmcinfo.com/latest-thinking/blog/id/9593/frame-accurate-video-scrubb
 - mp4box + webcodes api (demux, decode, store, render)
 - <video> + .requestVideoFrameCallback
 - <video> + timingsrc
+
+https://sansho.studio/blog/html-videos-correct-background-color
