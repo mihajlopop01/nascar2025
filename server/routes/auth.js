@@ -12,12 +12,13 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback', (req, res, next) => {
   passport.authenticate('google', (err, user, info) => {
     if (err) {
-      return next(err); 
+      return next(err);
     }
     if (!user) {
+      console.log('No user');
       return res.redirect('http://localhost:5173/');
     }
-     req.user = user;
+    req.user = user;
     // Pozivamo handleLoginRedirect funkciju iz UserControllera
     UserController.handleLoginRedirect(req, res);
   })(req, res, next);
@@ -35,9 +36,9 @@ router.get('/user', (req, res) => {
 
 //Logout
 router.get('/logout', (req, res) => {
-    req.logout(() => {
-      res.redirect('http://localhost:5173/');
-    });
+  req.logout(() => {
+    res.redirect('http://localhost:5173/');
   });
+});
 
 module.exports = router;

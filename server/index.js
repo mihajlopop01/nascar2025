@@ -8,7 +8,7 @@ const authRoutes = require('./routes/auth');
 const workerRoutes = require('./routes/worker');
 const adminRoutes = require('./routes/admin');
 const auditorRoutes = require('./routes/auditor');
- 
+
 
 const app = express();
 
@@ -27,8 +27,8 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Rute
 app.use('/auth', authRoutes);
@@ -36,6 +36,10 @@ app.use('/worker', workerRoutes);
 app.use('/admin', adminRoutes);
 app.use('/auditor', auditorRoutes);
 app.use('/api', authRoutes);
+// app.use((req, res, next) => {
+//   res.setHeader("Content-Security-Policy", "default-src 'self'; font-src 'self' data: https://fonts.gstatic.com;");
+//   next();
+// });
 
 
 app.listen(3000, () => {
