@@ -656,28 +656,20 @@
 </div>
 
 <style>
-	:root {
-		--border1: #d6d6d6 1px solid;
-	}
-
 	#metrics_cont_outer {
 		overflow-y: scroll;
-		/* overflow-y: hidden; */
-		border-radius: 10px;
+		border-radius: var(--border-radius2);
 		margin: 0;
 		height: 100%;
 	}
 
 	#metrics_cont {
 		padding-bottom: calc(100vh - 500px);
-		/* overflow: scroll; */
 		overflow: visible;
-		/* height: 100%; */
 		gap: 15px;
 		border-radius: 10px;
 		margin-right: 5px;
 		> * {
-			/* margin-right: 10px; */
 			margin-bottom: 15px;
 		}
 		> :last-child {
@@ -686,7 +678,7 @@
 	}
 
 	.tag-container {
-		border-radius: 10px;
+		border-radius: var(--border-radius2);
 		padding: 15px;
 		padding-inline: 20px;
 		background-color: var(--main-background);
@@ -703,12 +695,12 @@
 		font-size: 1.2rem;
 		font-weight: 500;
 		margin-bottom: 3px;
-		/* color: grey; */
+		color: var(--font-color);
 	}
 
 	.priority_tag {
 		font-weight: 400;
-		color: rgb(208, 208, 208);
+		color: var(--metric-group-priority-color);
 	}
 
 	.group_metrics_container {
@@ -728,13 +720,14 @@
 		}
 		& :hover {
 			> * {
-				transition: all 0.2s ease-in-out;
+				/* transition: all 0.2s ease-in-out; */
 			}
 			.value {
 				background-color: var(--light-green);
 			}
 			.value-empty {
-				color: rgb(109, 109, 109);
+				/* color: rgb(109, 109, 109); */
+				/* color: var(--main-dark); */
 			}
 		}
 	}
@@ -748,7 +741,7 @@
 		padding-block: 7px;
 		/* padding-inline: 7px; */
 		background-color: transparent;
-		border-bottom: #e6e6e6 1px solid;
+		border-bottom: var(--border-metric-divider);
 		grid-column: span 2;
 		display: grid;
 		grid-template-columns: 1fr auto;
@@ -767,47 +760,49 @@
 		}
 
 		& .value {
+			color: var(--metric-color);
 			font-weight: 400;
-			font-family: 'Roboto Mono', monospace;
-			font-size: 1.2rem;
+			font-family: var(--mono-font);
+			font-size: 1.1rem;
 			/* line-height: 0; */
 			justify-content: flex-end;
 
 			background-color: var(--main-dark);
 			/* background-color: transparent; */
-			border-radius: 7px;
+			border-radius: var(--border-radius3);
 			padding-block: 2px;
 			padding-inline: 5px;
 			border: var(--border1);
-
-			transition: all 0.2s ease-in-out;
 		}
 		& .value-empty {
-			color: #b5b5b5;
+			color: var(--metric-color-empty);
+			/* color: var(--main-dark); */
 		}
 		& .value-done {
-			color: black;
+			color: var(--metric-color);
 		}
 
 		&.selected-metric {
 			font-weight: 600;
 			border-bottom: 1px solid transparent;
 			> * {
-				transition: all 0.2s ease-in-out;
+				/* transition: all 0.2s ease-in-out; */
 				color: white;
 			}
 
 			& .value {
 				background-color: rgb(107, 107, 107);
-				background-color: var(--light-green);
-				color: black;
+				background-color: var(--main-dark);
+				color: var(--metric-color);
 				/* color: green;
 				background-color: rgb(199, 233, 199); */
 				/* background-color: var(--main-background); */
 			}
 			& .value-empty {
-				/* color: rgb(159, 210, 159); */
-				color: rgb(109, 109, 109);
+				/* box-sizing: content-box; */
+				/* color: rgb(109, 109, 109); */
+				color: var(--metric-color-empty);
+				/* box-shadow: 0 0 0 1px rgb(217, 41, 6); */
 			}
 		}
 
@@ -823,9 +818,9 @@
 				right: -7px;
 				bottom: 0;
 				border: 1px solid transparent;
-				border-radius: 10px;
-				background-color: rgb(233, 233, 233);
-				transition: all 0.2s ease-in-out;
+				border-radius: 0;
+				background-color: var(--metric-hover-color);
+				/* transition: all 0.2s ease-in-out; */
 			}
 		}
 	}
@@ -853,11 +848,9 @@
 		/* background-color: rgb(211, 249, 211); */
 		background-color: rgb(69, 69, 69);
 		background-color: var(--main-green);
-		border: 1px solid rgb(207, 0, 0);
-		border-radius: 10px;
+		border: 1px solid rgb(217, 41, 6);
+		border-radius: var(--border-radius2);
 		/* box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); */
-
-		transition: all 0.2s ease-in-out;
 	}
 
 	::-webkit-scrollbar {
@@ -871,7 +864,7 @@
 	}
 
 	::-webkit-scrollbar-thumb {
-		background: #cccccc;
+		background: var(--metric-scroll-color);
 		border-radius: 5px;
 		transition: all 0.2s ease-in-out;
 	}

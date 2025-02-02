@@ -1,0 +1,31 @@
+{
+    "name": "Asphlat Workbench",
+    "short_name": "AW",
+    "description": "AW",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#FF5733",
+    "theme_color": "#0f0f0f",
+    "icons": [
+        {
+            "src": "/logo-big.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshot.png",
+            "sizes": "1438x750",
+            "type": "image/png",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/screenshot.png",
+            "sizes": "1438x750",
+            "type": "image/png"
+        }
+    ]
+}

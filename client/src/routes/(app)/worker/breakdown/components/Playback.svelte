@@ -1,13 +1,29 @@
 <script>
-	import { onMount, onDestroy, untrack } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 
 	// let playbackSpeed = 1;
-	let { video, currentTime = $bindable(), paused = $bindable(), duration, frameRate } = $props();
+	let {
+		video,
+		currentTime = $bindable(),
+		paused = $bindable(),
+		duration,
+		frameRate,
+		isExtended = $bindable(),
+		selectedPanel = $bindable(),
+		speedVideo = $bindable()
+	} = $props();
 
 	let progressBar,
 		progressBarTrack,
 		progressBarWidth = $state(),
 		callbackId;
+
+	const panelNames = ['OH', 'E1', 'E2', 'E3'];
+
+	$effect(() => {
+		if (!video) return;
+		video.playbackRate = speedVideo;
+	});
 
 	$effect(() => {
 		if (paused) return;
@@ -38,8 +54,9 @@
 
 		const videoLoadedHandler = () => {
 			console.log('video loaded');
+			video.playbackRate = speedVideo;
 		};
-		video.addEventListener('durationchange', videoLoadedHandler);
+		if (video) video.addEventListener('durationchange', videoLoadedHandler);
 
 		return () => {
 			video.cancelVideoFrameCallback(callbackId);
@@ -49,44 +66,9 @@
 </script>
 
 <div class="playback-container">
-	<div class="controls">
-		<button
-			onclick={() => {
-				duration ? (paused = !paused) : {};
-			}}
-			aria-label={paused ? 'play' : 'pause'}
-			tabindex="-1"
-		>
-			<img
-				height="30px"
-				src={paused ? '/assets/play.png' : '/assets/pause.png'}
-				alt={paused ? 'Play' : 'Pause'}
-			/>
-		</button>
-		<!-- <div class="speed-control">
-			<label for="speed">Speed:</label>
-			<select id="speed" on:change={changeSpeed}>
-				<option value="0.5">0.5x</option>
-				<option value="1" selected>1x</option>
-				<option value="1.5">1.5x</option>
-				<option value="2">2x</option>
-			</select>
-		</div> -->
-		<div class="time-display">{currentTime.toFixed(2).padStart(5, '0')}</div>
-	</div>
-	<!-- <input
-		type="range"
-		min="0"
-		max={video?.duration || 0}
-		bind:value={currentTime}
-		class="progress-bar"
-		step="0.1"
-		onclick={(e) => video.pause()}
-		onkeydown={(e) => e.preventDefault()}
-	/> -->
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div id="upper">
 		<div
+			role
 			onmousedown={handleMouseMove}
 			bind:this={progressBarTrack}
 			id="progress-bar-wrapper"
@@ -97,14 +79,46 @@
 		>
 			<div bind:this={progressBar} id="progress-bar2"></div>
 		</div>
-		<!-- <div id="progress-bar-wrapper">
-			<div bind:this={progressBar11} id="progress-bar2"></div>
+	</div>
+	<div class="controls">
+		<button
+			onclick={() => {
+				duration ? (paused = !paused) : {};
+			}}
+			aria-label={paused ? 'play' : 'pause'}
+			tabindex="-1"
+		>
+			<img
+				src={paused ? '/assets/play_button.png' : '/assets/pause_button.png'}
+				alt={paused ? 'Play' : 'Pause'}
+			/>
+		</button>
+		<div class="time-display">{currentTime.toFixed(2).padStart(5, '0')}</div>
+		<button class="settings" onclick={() => (isExtended = !isExtended)}>
+			<img src="/assets/ios-settings.png" alt="Settings" />
+		</button>
+
+		<!-- <div class="time-display" id="duration-time">
+			{video && duration ? duration.toFixed(2).padStart(5, '0') : '00.00'}
 		</div> -->
 	</div>
 
-	<div class="time-display">
-		{video && duration ? duration.toFixed(2).padStart(5, '0') : '00.00'}
-	</div>
+	<!-- <div class="speed-control">
+			<label for="speed">Speed:</label>
+			<select id="speed" on:change={changeSpeed}>
+				<option value="0.5">0.5x</option>
+				<option value="1" selected>1x</option>
+				<option value="1.5">1.5x</option>
+				<option value="2">2x</option>
+			</select>
+		</div> -->
+	<!-- <div class="panel-select">
+		<select id="video-panel" onchange={() => {}}>
+			{#each panelNames as panel}
+				<option value={panel} selected={panel === selectedPanel}>{panel}</option>
+			{/each}
+		</select>
+	</div> -->
 
 	<!-- <button aria-label="settings">
 		<svg
@@ -127,7 +141,7 @@
 		--primary-accent-color: var(--main-green);
 		--secondary-accent-color: var(--light-green);
 
-		--primary-font-color: black;
+		--primary-font-color: grey;
 		--secondary-font-color: grey;
 
 		--card-color: var(--main-light);
@@ -142,26 +156,26 @@
 
 	#upper {
 		width: 100%;
-		height: 100%;
+		/* height: 100%; */
 		display: flex;
 		flex-direction: column;
 	}
 	#progress-bar-wrapper {
-		padding: 0;
+		box-sizing: border-box;
 		margin-block: auto;
 		background-color: var(--progress-bar-track-color);
-		border: #d6d6d6 1px solid;
-		border-radius: 5px;
+		border: var(--border-progress-bar);
+		border-radius: 6px;
 		position: relative;
 		overflow: hidden;
-		height: 10px;
+		height: 12px;
 		width: 100%;
 		cursor: pointer;
 	}
 	#progress-bar2 {
 		padding: 0;
 		margin: 0;
-		border-radius: 5px;
+		border-radius: inherit;
 		height: 100%;
 		width: 100%;
 		position: absolute;
@@ -171,23 +185,24 @@
 	}
 
 	.playback-container {
-		height: 100%;
+		/* height: 100%; */
+		width: 100%;
 		display: flex;
-		flex-direction: row;
-		gap: 1rem;
+		flex-direction: column;
+		gap: 10px;
 	}
 
 	.controls {
 		display: flex;
+		justify-content: space-between;
 		align-items: center;
-		gap: 1rem;
 	}
 
 	button {
 		height: 100%;
 		background-color: transparent;
 		border: none;
-		font-family: var(--main-font);
+		font-family: var(--mono-font);
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -204,17 +219,68 @@
 		}
 
 		> img {
-			height: 35px;
+			height: 23px;
+			filter: var(--playback-button-color);
 		}
 	}
 
 	.time-display {
-		color: var(--primary-font-color);
+		color: var(--playback-control-color);
 		line-height: 1;
-		font-family: monospace;
-		font-size: 1.5rem;
+		font-family: var(--mono-font);
+		font-size: 1.6rem;
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+
+	.panel-select {
+		/* position: absolute; */
+		top: 0;
+		right: 0;
+		height: auto;
+		/* width: 60px; */
+		/* z-index: 10; */
+		/* margin: 15px; */
+		> select {
+			background-color: rgba(130, 130, 130, 0.5);
+			/* width: 100%; */
+			height: auto;
+			border: none;
+			border-radius: 20px;
+			padding-block: 7px;
+			padding-inline: 10px;
+			line-height: 1;
+			font-size: 1.2rem;
+			cursor: pointer;
+			/* transition: all 0.2s ease-in-out; */
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			appearance: none;
+			&:hover {
+				outline: none;
+			}
+
+			&:focus {
+				outline: none;
+			}
+
+			> option {
+				text-align: center;
+			}
+		}
+	}
+
+	.settings,
+	button {
+		width: 50px;
+	}
+
+	.settings {
+		> img {
+			margin-left: auto;
+			height: 30px;
+			filter: var(--playback-button-color);
+		}
 	}
 </style>

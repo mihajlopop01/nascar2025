@@ -4,12 +4,15 @@
 	import { page } from '$app/state';
 
 	let isExpanded = $state(false);
-	let theme = $state('light');
+	let theme = $state('dark');
 
 	function toggleTheme() {
 		theme = theme === 'light' ? 'dark' : 'light';
 		document.cookie = `theme=${theme}; path=/; max-age=31536000`;
 		document.documentElement.setAttribute('data-theme', theme);
+
+		let status_bar_pwa = theme === 'dark' ? '#0f0f0f' : '#f1f1f1';
+		document.querySelector('meta[name="theme-color"]').setAttribute('content', status_bar_pwa);
 	}
 
 	onMount(() => {
@@ -20,7 +23,7 @@
 <nav class:isExpanded>
 	<div class="nav-container" id="logo-container">
 		<a href class="nav-font logo" onclick={() => (isExpanded = !isExpanded)}>
-			<svg
+			<!-- <svg
 				xmlns="http://www.w3.org/2000/svg"
 				height="40px"
 				viewBox="0 -960 960 960"
@@ -31,7 +34,12 @@
 				<path
 					d="M653.33-160v-280H800v280H653.33Zm-246.66 0v-640h146.66v640H406.67ZM160-160v-440h146.67v440H160Z"
 				/>
+			</svg> -->
+			<!-- svg circle -->
+			<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px">
+				<circle cx="50" cy="50" r="50" fill="var(--main-green)" />
 			</svg>
+
 			{#if isExpanded}
 				<span>Asphalt Workbench</span>
 			{/if}
@@ -136,7 +144,7 @@
 	</div>
 
 	<div class="nav-container" id="settings-container">
-		<a href onclick={toggleTheme} id="dmode" class="nav-font hidden">
+		<button onclick={toggleTheme} id="dmode" class="nav-font" style="cursor: pointer;">
 			{#if theme === 'light'}
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -170,7 +178,7 @@
 					<span>Light Mode</span>
 				{/if}
 			{/if}
-		</a>
+		</button>
 		<a class="nav-font {page.url.pathname === '/settings' ? 'active-nav' : ''}" href>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -235,25 +243,30 @@
 </nav>
 
 <style>
+	button {
+		background-color: transparent;
+		border: none;
+	}
 	.isExpanded {
 		width: 220px;
+		border-right: var(--border1);
 		> div > a > span {
 			opacity: 1;
 			background-color: transparent;
 		}
 	}
 	nav {
+		z-index: 10;
 		grid-area: nav;
 		height: 100vh;
 		border-right: 1px solid var(--main-dark);
 		box-sizing: border-box;
 		display: grid;
 		grid-template-rows: auto 1fr auto;
-		transition: all 0.2s;
+		/* transition: all 0.2s; */
 	}
 
 	.nav-font {
-		/* width: 24px; */
 		position: relative;
 		font-family: var(--main-font);
 		border-radius: 10px;
@@ -262,30 +275,34 @@
 		color: var(--font-color);
 		padding: 7px;
 		text-decoration: none;
-		transition: all 0.2s;
+		/* transition: all 0.2s; */
 
 		> svg {
-			transition: all 0.2s;
+			fill: var(--nav-icon-color);
+			/* transition: all 0.2s; */
 			z-index: 2;
 		}
 
 		&.active-nav {
 			background-color: var(--light-green);
 			color: var(--main-green);
-			transition: all 0.2s;
+
+			border: var(--border1);
+			/* transition: all 0.2s; */
 
 			& svg {
-				fill: var(--main-green);
-				transition: all 0.2s;
+				fill: var(--font-color);
+				/* transition: all 0.2s; */
 			}
 		}
 
 		&:hover {
 			background-color: var(--light-green);
-			transition: all 0.2s;
+			/* transition: all 0.2s; */
 		}
 
 		> span {
+			border: 1px solid transparent;
 			box-sizing: border-box;
 			padding-left: 65px;
 			background-color: var(--main-dark);
@@ -301,7 +318,7 @@
 			display: flex;
 			justify-content: left;
 			align-items: center;
-			transition: all 0.2s;
+			/* transition: all 0.2s; */
 		}
 
 		display: flex;
@@ -309,9 +326,10 @@
 	}
 
 	.nav-font:hover > span {
-		transition: all 0.2s;
+		/* transition: all 0.2s; */
 		opacity: 1;
 		pointer-events: none;
+		border: var(--border1);
 	}
 
 	.nav-container {
@@ -321,6 +339,7 @@
 		/* height: 100%; */
 		display: flex;
 		flex-direction: column;
+
 		align-items: left;
 		background-color: transparent;
 	}
@@ -330,12 +349,13 @@
 	}
 
 	#pages-container {
-		padding-top: 30px;
+		justify-content: center;
+		gap: 20px;
 	}
 
 	#settings-container {
 		height: 100%;
-		padding-bottom: 20px;
+		padding-block: 20px;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-end;
@@ -384,6 +404,9 @@
 		height: 40px;
 		font-weight: 600;
 		color: var(--main-green);
+		display: flex;
+		align-items: center;
+		justify-content: center;
 
 		& .nav-icon {
 			fill: var(--main-green);

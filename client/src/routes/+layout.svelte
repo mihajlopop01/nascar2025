@@ -1,12 +1,21 @@
 <script>
 	import '../styles/global.css';
 	import { appState } from './js/state.svelte.js';
+	import { page } from '$app/state';
 
-	let { children } = $props();
+	let { children, data } = $props();
+	console.log('message from laod funtion in layout.js', data);
+
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker
+			.register('/sw.js')
+			.then(() => console.log('Service Worker registered'))
+			.catch((err) => console.error('Service Worker registration failed', err));
+	}
 </script>
 
 <svelte:head>
-	<title>{appState.page}</title>
+	<title>{page.url.pathname == '/worker/breakdown' ? '' : ''}</title>
 </svelte:head>
 {@render children()}
 

@@ -1,8 +1,9 @@
 <script>
 	import { onMount } from 'svelte';
-	import Playback from './Playback.svelte';
+
 	import MetricView from './Metrics.svelte';
 	import Page from '../+page.svelte';
+	import PitstopCard from './PitstopCard.svelte';
 
 	let pageElement;
 
@@ -92,7 +93,6 @@
 			case 'ArrowRight':
 				if (event.repeat) {
 					if (paused) {
-						videoElement.playbackRate = 1;
 						videoElement.play();
 					}
 					return;
@@ -125,6 +125,7 @@
 					return;
 				}
 				keyboardMetricAction = { key: 'next' };
+				paused = true;
 				break;
 			case 'ArrowUp':
 				if (event.shiftKey) {
@@ -143,6 +144,7 @@
 					return;
 				}
 				keyboardMetricAction = { key: 'previous' };
+				paused = true;
 				break;
 			case 'Space':
 				if (event.repeat) return;
@@ -204,6 +206,12 @@
 					}
 				}
 				break;
+			case 'KeyL':
+				if (event.repeat) return;
+				if (event.ctrlKey) {
+					switchSide();
+				}
+				break;
 		}
 	}
 
@@ -253,14 +261,14 @@
 
 	onMount(() => {
 		pageElement = document.documentElement;
-		canvas = document.querySelector('canvas');
+		// canvas = document.querySelector('canvas');
 
-		videoElement.onloadeddata = () => {
-			canvas.width = videoElement.videoWidth;
-			canvas.height = videoElement.videoHeight;
-			ctx1 = canvas.getContext('2d');
-			videoElement.requestVideoFrameCallback(updateCanvas);
-		};
+		// videoElement.onloadeddata = () => {
+		// 	canvas.width = videoElement.videoWidth;
+		// 	canvas.height = videoElement.videoHeight;
+		// 	ctx1 = canvas.getContext('2d');
+		// 	videoElement.requestVideoFrameCallback(updateCanvas);
+		// };
 	});
 </script>
 
@@ -268,201 +276,32 @@
 
 <main>
 	<div id="left">
-		<div id="pitstop" class="card">
-			<div id="pitstop-container">
-				<div class="pitstop-card" id="car-info-card">
-					<div class="pitstop-card-header">Car</div>
-					<label>
-						<span class="pitstop-number-big">42</span>
-						<input type="file" accept="video/*" multiple onchange={handleFileUpload} />
-					</label>
-				</div>
-				<div class="pitstop-card" id="stop-info-card">
-					<div class="pitstop-card-header">Stop</div>
-					<div id="stop-info-number">
-						<span class="pitstop-number-mid">3</span>
-					</div>
-					<div id="stop-info-content">
-						<span class="">Lap 12</span>
-						<span class="">12.3s</span>
-						<span class="">4 Tire</span>
-					</div>
-				</div>
+		<div id="header" class="card">
+			<div id="header-buttons">
+				<button class="settings-button" id="finished-button">
+					<img src="/assets/check.png" alt="Switch side" />
+				</button>
+				<button class="settings-button">
+					<img src="/assets/question_mark.png" alt="Switch side" />
+				</button>
+				<!-- <button class="settings-button" onclick={switchSide}>
+					<img src="/assets/ios-settings.png" alt="Switch side" />
+				</button> -->
 			</div>
-
-			<style>
-				#pitstop-container {
-					width: 100%;
-					margin: 0;
-					padding: 0;
-					display: flex;
-					flex-direction: row;
-					gap: 15px;
-				}
-				.pitstop-card {
-					transition: all 0.2s ease-in-out;
-					position: relative;
-					padding: 10px;
-					background-color: var(--main-light);
-					border-radius: 10px;
-					cursor: pointer;
-					&:hover {
-						transition: all 0.2s ease-in-out;
-						background-color: rgb(240, 240, 240);
-						/* transform: scale(1.05); */
-					}
-				}
-				#car-info-card {
-					width: auto;
-					box-sizing: border-box;
-
-					transition: all 0.2s ease-in-out;
-
-					&:hover {
-						transition: all 0.2s ease-in-out;
-					}
-
-					> label {
-						box-sizing: border-box;
-						/* building-block-size: 100%; */
-						width: 70px;
-						cursor: pointer;
-						height: 100%;
-						display: flex;
-						flex-direction: column;
-						justify-content: center;
-						align-items: center;
-						margin-block: auto;
-						text-align: center;
-						> input[type='file'] {
-							display: none;
-						}
-					}
-				}
-				.pitstop-card-header {
-					top: 10px;
-					left: 10px;
-					position: absolute;
-					height: auto;
-					color: grey;
-					line-height: 1;
-				}
-				#stop-info-card {
-					box-sizing: border-box;
-					height: 100%;
-					width: 100%;
-					display: flex;
-					flex-direction: row;
-					justify-content: center;
-					align-items: center;
-					gap: 12px;
-
-					> #stop-info-number {
-						box-sizing: border-box;
-						width: 70px;
-						height: 100%;
-						display: flex;
-						flex-direction: column;
-						justify-content: center;
-						align-items: center;
-						/* gap: 5px; */
-						margin: 0;
-						padding-inline: 10px;
-						text-align: center;
-					}
-					> #stop-info-content {
-						color: grey;
-						font-size: 1.2rem;
-						/* font-weight: 500; */
-						width: 100%;
-						/* height: 100%; */
-						display: flex;
-						flex-direction: column;
-						justify-content: space-between;
-						align-items: left;
-						gap: 3px;
-					}
-				}
-
-				.pitstop-number-big {
-					color: black;
-					font-size: 2.5rem;
-					font-weight: 500;
-					/* height: 100%; */
-				}
-				.pitstop-number-mid {
-					font-size: 2.5rem;
-					font-weight: 500;
-					color: grey;
-				}
-				.pitstop-label-small {
-					font-size: 1.2rem;
-					color: grey;
-				}
-
-				#pitstop-expansion {
-					box-sizing: border-box;
-					z-index: -1;
-					position: absolute;
-					right: 0;
-					top: 0;
-					width: 225px;
-					height: 100%;
-					opacity: 0;
-					transition: all 0.3s ease;
-					pointer-events: none;
-					display: flex;
-					flex-direction: row;
-					justify-content: space-between;
-					gap: 15px;
-					padding: 15px;
-					padding-left: 0;
-
-					> #template-select-card,
-					> #panel-select-card {
-						box-sizing: border-box;
-						height: 100%;
-						width: 100%;
-						padding: 10px;
-					}
-				}
-				#pitstop:focus #pitstop-expansion {
-					opacity: 1;
-					pointer-events: auto;
-					transition: all 0.3s ease;
-				}
-			</style>
+		</div>
+		<div class="card">
+			<PitstopCard
+				{videoElement}
+				bind:currentTime
+				bind:paused
+				bind:selectedPanel
+				bind:selectedTemplate
+				{duration}
+				{frameRate}
+				{handleFileUpload}
+			/>
 		</div>
 
-		<div id="work" class="card" style="height: 130px;">
-			<button onclick={switchSide}>Switch side</button>
-			<!-- <div id="work_info" style="visibility: hidden;">
-				<div id="pitstop-timeline">
-					<div class="pitstop-timeline-text">start</div>
-					<div class="pitstop-timeline-moment">23:45</div>
-					<div class="pitstop-timeline-moment">23:45</div>
-					<div class="pitstop-timeline-moment">23:55</div>
-					<div class="pitstop-timeline-text">goal</div>
-				</div>
-				<div id="work_timer">
-					<span id="work_timer_text"><span>🟢</span>{timerDisplay}</span>
-					<span>Petar Jovanovic</span>
-				</div>
-				<div id="work_buttons_cont">
-					<button class="work_button">Help</button>
-					<button class="work_button">Submit</button>
-				</div>
-			</div> -->
-		</div>
-		<!-- <div id="settings_container" class="card">
-			<div class="template-select">
-				<select id="stop-type" onchange={changeTemplate}>
-					{#each templates as template}
-						<option value={template} selected={template === selectedTemplate}>{template}</option>
-					{/each}
-				</select>
-			</div>
-		</div> -->
 		<div id="left_metrics" class="left_part card">
 			<svelte:boundary onerror={(error) => console.error(error)}>
 				<MetricView
@@ -493,24 +332,6 @@
 			>
 			</video>
 			<canvas id="video_background"></canvas>
-			<div class="panel-select">
-				<select id="video-panel" onchange={changePanel}>
-					{#each panelNames as panel}
-						<option value={panel} selected={panel === selectedPanel}>{panel}</option>
-					{/each}
-				</select>
-			</div>
-		</div>
-
-		<div id="video_controls" class="card">
-			<Playback
-				video={videoElement}
-				bind:currentTime
-				bind:paused
-				{duration}
-				{frameRate}
-				on:keydown={(e) => e.preventDefault()}
-			/>
 		</div>
 	</div>
 </main>
@@ -519,6 +340,7 @@
 	main {
 		box-sizing: border-box;
 		height: 100%;
+		min-height: 480px;
 		width: 100%;
 		padding: 15px;
 		display: grid;
@@ -535,25 +357,32 @@
 	#right {
 		box-sizing: border-box;
 		height: calc(100vh - 30px);
+		min-height: 450px;
 		width: 100%;
 		display: grid;
 		gap: 15px;
 	}
 	#left {
+		width: 320px;
+		max-width: 320px;
 		grid-area: right;
 		grid-template-rows: auto auto 1fr;
 	}
 	#right {
 		grid-area: left;
-		grid-template-rows: 1fr auto;
+		/* grid-template-rows: 1fr auto; */
 	}
 
 	.card {
 		box-sizing: border-box;
 		background-color: var(--main-dark);
-		border-radius: 20px;
-		padding: 15px;
-		border: 1px solid rgb(214, 214, 214);
+
+		border-radius: var(--border-radius1);
+		padding: var(--card-padding);
+		border: var(--border-card);
+
+		/* background-color: rgb(198, 198, 198);
+		border: 1px solid rgb(192, 192, 192); */
 	}
 
 	button {
@@ -561,28 +390,53 @@
 		border: none;
 		color: white;
 		font-family: var(--main-font);
-		padding: 5px;
-		border-radius: 5px;
-		width: 100%;
 
 		cursor: pointer;
-		transition: all 0.2s ease-in-out;
+		/* transition: all 0.2s ease-in-out; */
 		&:hover {
-			background-color: var(--main-color);
+			background-color: var(--main-light);
 			color: var(--background-color);
-			transition: all 0.2s ease-in-out;
+			/* transition: all 0.2s ease-in-out; */
 		}
 	}
 
-	/* .left_part {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-	} */
+	.settings-button {
+		box-sizing: border-box;
+		line-height: 1;
+		height: 45px;
+		width: 45px;
+		margin: 0;
+		padding: 0;
+		background-color: var(--main-background);
+		border-radius: 50%;
+		border: var(--border1);
 
-	#pitstop {
 		display: flex;
-		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		> img {
+			filter: invert(0.5);
+			height: 30px;
+		}
+
+		&#finished-button {
+			> img {
+				height: 40px;
+			}
+		}
+	}
+
+	#header {
+		padding: 7.5px;
+		height: 60px;
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+	}
+
+	#header-buttons {
+		display: flex;
+		gap: 5px;
 	}
 
 	/* #work {
@@ -605,10 +459,10 @@
 		position: relative;
 		padding: 0;
 		overflow: hidden;
-		min-height: 500px;
+		height: 100%;
 		min-width: 500px;
-		background-color: rgb(105, 105, 105);
-		border: 1px solid rgb(80, 80, 80);
+		background-color: var(--video-background);
+		border: var(--border-card);
 
 		> #video_background {
 			width: 100%;
@@ -624,7 +478,7 @@
 			background-position: center;
 			filter: blur(50px);
 			transform: scale(3);
-			z-index: 1;
+			/* z-index: 1; */
 		}
 
 		> video {
@@ -642,8 +496,8 @@
 	}
 
 	#video_controls {
-		padding-block: 0;
-		height: 40px;
+		/* padding-block: 0; */
+		/* height: 120px; */
 	}
 
 	#work_info {
@@ -696,7 +550,7 @@
 		font-size: 1.4rem;
 		border-radius: 20px;
 		cursor: pointer;
-		transition: all 0.2s ease-in-out;
+		/* transition: all 0.2s ease-in-out; */
 		-webkit-appearance: none;
 		-moz-appearance: none;
 		appearance: none;
@@ -712,43 +566,6 @@
 
 		> option {
 			text-align: center;
-		}
-	}
-
-	.panel-select {
-		position: absolute;
-		top: 0;
-		right: 0;
-		height: auto;
-		width: 60px;
-		z-index: 10;
-		margin: 15px;
-		> select {
-			background-color: rgba(130, 130, 130, 0.5);
-			width: 100%;
-			height: auto;
-			border: none;
-			border-radius: 10px;
-			padding-block: 7px;
-			padding-inline: 10px;
-			line-height: 1;
-			font-size: 1.4rem;
-			cursor: pointer;
-			transition: all 0.2s ease-in-out;
-			-webkit-appearance: none;
-			-moz-appearance: none;
-			appearance: none;
-			&:hover {
-				outline: none;
-			}
-
-			&:focus {
-				outline: none;
-			}
-
-			> option {
-				text-align: center;
-			}
 		}
 	}
 

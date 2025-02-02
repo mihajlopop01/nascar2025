@@ -15,13 +15,15 @@
 
 
     /* --main-green: #007ac2; */
-    --main-green: #e4002b;
+    /* --main-green: #e4002b; */
+    --main-green: rgb(237, 63, 28);
     --light-green: var(--main-dark);
     --proba: #dcefe8;
 
     /* --main-font: 'Poppins', sans-serif; */
     --main-font: 'Apple SF Pro', sans-serif;
-    --main-font: 'Poppins', sans-serif;
+    /* --main-font: 'Poppins', sans-serif; */
+    --mono-font: 'Apple SF Mono';
     --font-color: black;
     --font-color-mid: #555;
     --grey-font: #ababab;
@@ -31,6 +33,31 @@
     --button-color-hover: #e0e0e0;
 
     --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    --border1: #d6d6d6 1px solid;
+    --border-card: 1px solid rgb(214, 214, 214);
+    --border-metric-divider: #e4e4e4 1px solid;
+
+    --nav-icon-color: grey;
+    --playback-control-color: rgb(0, 0, 0);
+    --playback-button-color: invert(0.5);
+    --border-progress-bar: var(--border1);
+
+    --border-radius1: 30px;
+    --border-radius2: 15px;
+    --border-radius3: 7.5px;
+    --card-padding: 15px;
+
+    --video-background: #222222;
+
+
+    --stop-number-color: black;
+
+    --metric-color: black;
+    --metric-color-empty: rgb(186, 186, 186);
+    --metric-hover-color: rgb(236, 235, 235);
+    --metric-group-priority-color: rgb(205, 205, 205);
+    --metric-scroll-color: var(--main-dark);
 
 }
 
@@ -82,6 +109,11 @@
     font-weight: 800;
 }
 
+@font-face {
+    font-family: 'Apple SF Mono';
+    src: url('/fonts/SF-Mono/SFMonoRegular.otf') format('opentype');
+    font-weight: 400;
+}
 
 
 /* dark theme */
@@ -108,12 +140,31 @@
     --font-color: white;
     --font-color-hover: black;
 
-    --main-background: #1E1E1E;
+    --main-background: #0f0f0f;
     --grey-font: #F0F0F0;
-    --main-green: #e4002b;
+    /* --main-green: #e4002b; */
     --light-green: rgb(84, 84, 84);
 
-    --main-dark: #2e2e2e;
+    --main-dark: #222222;
+
+    --border1: #3a3a3a 1px solid;
+    --border1: 1px solid transparent;
+    --border-card: 1px solid transparent;
+    --border-metric-divider: #1b1b1b 1px solid;
+
+    --nav-icon-color: grey;
+    --playback-control-color: white;
+    --playback-button-color: invert(0.5);
+    --border-progress-bar: none;
+
+    --video-background: #222222;
+
+    --stop-number-color: white;
+
+    --metric-color: white;
+    --metric-color-empty: rgb(64, 64, 64);
+    --metric-hover-color: rgb(20, 20, 20);
+    --metric-group-priority-color: var(--main-dark);
 
 }
 
